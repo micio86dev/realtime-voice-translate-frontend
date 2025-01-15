@@ -1,0 +1,38 @@
+p,
+span {
+  @apply text-xs;
+}
+
+h1 {
+  @apply text-center text-2xl font-bold md:text-3xl;
+}
+
+h2 {
+  @apply text-left text-xl font-bold md:text-2xl;
+}
+
+h3 {
+  @apply text-left text-lg font-bold md:text-xl;
+}
+
+h4 {
+  @apply text-left text-sm font-bold md:text-base;
+}
+
+h5 {
+  @apply text-left text-xs font-medium tracking-wide md:text-base;
+}
+
+a {
+  @apply transition-all duration-200 ease-in-out hover:text-primary-500;
+}
+
+.text {
+  &.is-danger {
+    @apply font-semibold text-danger-700;
+  }
+
+  &.is-success {
+    @apply font-semibold text-success-700;
+  }
+}

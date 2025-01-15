@@ -1,0 +1,50 @@
+button {
+  @apply inline-flex items-center justify-center rounded-sm px-4 py-2 text-center font-medium leading-snug text-white transition duration-200 ease-in hover:border-gray-600 hover:bg-gray-100 dark:border-slate-500 dark:hover:border-slate-800 dark:hover:bg-slate-800 md:px-8;
+
+  &.is-small {
+    @apply px-2 py-1 text-xs;
+  }
+
+  &.is-ghost {
+    @apply border-none text-gray-600 shadow-none hover:text-primary-900 dark:text-gray-400 dark:hover:text-primary-900;
+  }
+
+  &.is-add {
+    @apply fixed bottom-12 right-5 z-10 rounded-full p-4;
+  }
+
+  &.is-primary {
+    @apply bg-primary-700 font-semibold hover:bg-primary-800  hover:text-white dark:border-danger-700 dark:bg-danger-700 dark:hover:border-danger-900 dark:hover:bg-danger-900;
+  }
+
+  &.is-secondary {
+    @apply bg-slate-500 font-semibold hover:bg-slate-600  hover:text-white dark:border-slate-500 dark:hover:border-slate-900 dark:hover:bg-slate-600;
+  }
+
+  &.is-info {
+    @apply border-info-600 bg-info-600 font-semibold hover:border-info-800 hover:bg-info-800 hover:text-white dark:border-info-700 dark:bg-info-700 dark:hover:border-info-900 dark:hover:bg-info-900;
+  }
+
+  &.is-warning {
+    @apply border-warning-600 bg-warning-600 font-semibold hover:border-warning-800 hover:bg-warning-800 hover:text-white dark:border-warning-700 dark:bg-warning-700 dark:hover:border-warning-900 dark:hover:bg-warning-900;
+  }
+
+  &.is-success {
+    @apply border-success-600 bg-success-600 font-semibold hover:border-success-800 hover:bg-success-800 hover:text-white dark:border-success-700 dark:bg-success-700 dark:hover:border-success-900 dark:hover:bg-success-900;
+  }
+
+  &.is-danger {
+    @apply border-danger-600 bg-danger-600 font-semibold hover:border-danger-800 hover:bg-danger-800 hover:text-white dark:border-danger-700 dark:bg-danger-700 dark:hover:border-danger-900 dark:hover:bg-danger-900;
+  }
+}
+
+.btn-group {
+  @apply inline-flex rounded-md shadow-sm;
+
+  button {
+    @apply border-b border-t border-gray-200 bg-white p-2 px-4 text-sm font-medium text-gray-900 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:text-blue-700 focus:ring-2 focus:ring-blue-700 dark:border-gray-700 dark:bg-gray-800 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white dark:focus:text-white dark:focus:ring-blue-500;
+    &.active {
+      @apply bg-primary-700 text-white;
+    }
+  }
+}

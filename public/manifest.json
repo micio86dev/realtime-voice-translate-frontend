@@ -1,0 +1,9 @@
+{
+  "$schema": "https://json.schemastore.org/web-manifest-combined.json",
+  "name": "Realtime Voice Translate",
+  "short_name": "RVT",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#fff",
+  "description": "Realtime Voice Translate"
+}

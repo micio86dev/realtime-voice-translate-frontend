@@ -1,0 +1,51 @@
+form {
+  @apply flex flex-col gap-4 rounded-sm;
+  &.login {
+    @apply m-auto flex w-full max-w-md flex-col gap-4 bg-white p-6 dark:bg-slate-700 md:w-80;
+    &:hover {
+      @apply bg-none;
+    }
+    label {
+      @apply bg-white dark:bg-slate-700;
+    }
+  }
+}
+
+.field {
+  @apply relative mt-2 w-full;
+}
+.field input.small {
+  @apply h-9 text-xs;
+}
+
+label {
+  @apply absolute start-1 top-2 z-10 origin-[0] -translate-y-[1.1rem] scale-75 transform bg-gray-50 px-2 text-sm text-gray-500 duration-300 peer-placeholder-shown:top-1/2 peer-placeholder-shown:scale-100 peer-focus:top-2 peer-focus:-translate-y-4 peer-focus:scale-75 peer-focus:px-2 peer-focus:text-blue-600 rtl:peer-focus:left-auto rtl:peer-focus:translate-x-1/4 dark:bg-slate-700 dark:text-gray-400 peer-focus:dark:text-blue-500;
+}
+
+input,
+select,
+textarea {
+  @apply block w-full appearance-none rounded-sm border border-gray-300 bg-transparent p-3.5 text-sm leading-tight text-gray-900 focus:border-primary-600 focus:outline-none focus:ring-0 dark:border-gray-600;
+}
+
+textarea {
+  @apply min-h-[5rem] resize-y;
+}
+
+input[type="range"] {
+  @apply h-2 cursor-pointer rounded-lg border-0 bg-gray-200 p-0 dark:bg-gray-700;
+  background-image: linear-gradient(#086108, #00ff00);
+  background-repeat: no-repeat;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  @apply h-4 w-4 cursor-pointer appearance-none rounded-lg bg-primary-700;
+}
+
+.actions {
+  @apply flex flex-row justify-center gap-2 md:flex-row;
+
+  button {
+    @apply w-full p-3.5;
+  }
+}

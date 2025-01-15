@@ -1,0 +1,118 @@
+@tailwind components;
+
+@layer components {
+  :root {
+    --swiper-pagination-bottom: auto;
+    --swiper-pagination-top: 0rem;
+  }
+
+  body,
+  * {
+    font-family: sans-serif;
+    @apply dark:text-white;
+  }
+
+  ol {
+    @apply list-decimal pl-4;
+    li {
+      @apply p-1 text-xs;
+    }
+  }
+
+  main {
+    @apply min-h-[calc(100vh-134px)] bg-slate-100 dark:bg-slate-800;
+  }
+
+  section {
+    @apply mx-auto max-w-4xl p-4;
+  }
+
+  .list {
+    @apply flex flex-col flex-wrap gap-4 md:flex-row;
+  }
+
+  .row {
+    @apply grid grid-cols-1 gap-4;
+  }
+
+  .card {
+    @apply flex w-full flex-col gap-4 rounded-sm bg-gray-50 p-4 shadow dark:border-gray-700 dark:bg-gray-700;
+
+    &.bg-elevated {
+      @apply bg-slate-200 dark:bg-slate-600;
+      label {
+        @apply bg-slate-200 dark:bg-slate-600;
+      }
+      input {
+        @apply bg-white text-black;
+      }
+    }
+  }
+
+  .filters {
+    @apply block w-full rounded-md border border-gray-200 bg-white p-4 shadow dark:border-gray-700 dark:bg-gray-700;
+  }
+
+  .notification {
+    @apply p-4;
+
+    &.is-danger {
+      @apply bg-danger-700 font-semibold text-white;
+    }
+
+    &.is-success {
+      @apply bg-success-700 font-semibold text-white;
+    }
+  }
+
+  [data-aw-toggle-menu] path {
+    @apply transition;
+  }
+
+  [data-aw-toggle-menu].expanded g > path:first-child {
+    @apply translate-x-[-3px] translate-y-[15px] -rotate-45;
+  }
+
+  [data-aw-toggle-menu].expanded g > path:last-child {
+    @apply translate-x-[14px] translate-y-[-8px] rotate-45;
+  }
+}
+
+.badge {
+  @apply rounded-full bg-slate-200 px-2 dark:bg-slate-600;
+}
+
+.swiper {
+  @apply flex w-full flex-col gap-4 md:w-auto;
+  .swiper-slide {
+    @apply flex flex-col gap-4;
+  }
+}
+.swiper-pagination-bullet-active {
+  @apply bg-primary-700 !important;
+}
+
+.image-wrapper {
+  @apply h-[64px] w-[64px] overflow-hidden rounded-sm bg-white p-1;
+
+  img {
+    @apply h-fit w-fit;
+  }
+}
+
+/* Spinner */
+.loader {
+  width: 18px;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background:
+    radial-gradient(farthest-side, #fff 94%, #0000) top/3px 3px no-repeat,
+    conic-gradient(#0000 30%, #fff);
+  -webkit-mask: radial-gradient(farthest-side, #0000 calc(100% - 3px), #000 0);
+  animation: l13 1s infinite linear;
+}
+@keyframes l13 {
+  100% {
+    transform: rotate(1turn);
+  }
+}
