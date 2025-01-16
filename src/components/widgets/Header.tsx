@@ -2,15 +2,11 @@ import {
   component$,
   useStore,
   getLocale,
-  useContext,
   $,
 } from "@builder.io/qwik";
 import { Link } from "@builder.io/qwik-city";
-import { AuthContext } from "~/root";
 import Logo from "~/components/atoms/Logo";
 import ToggleTheme from "~/components/core/ToggleTheme";
-import ToggleMenu from "~/components/core/ToggleMenu";
-import LogoutButton from "../atoms/LogoutButton";
 import { SITE } from "../../../src/config.mjs";
 
 interface MenuItem {
@@ -25,7 +21,6 @@ export default component$(() => {
   });
 
   const lang = getLocale();
-  const currentUser = useContext(AuthContext);
   const menu = [] as MenuItem[];
 
   const closeMenu = $(() => {
@@ -55,7 +50,6 @@ export default component$(() => {
           <h1 class="m-0 ml-4">{ SITE.name }</h1>
           <div class="flex items-center md:hidden">
             <ToggleTheme iconClass="w-6 h-6" />
-            { currentUser.authToken && <ToggleMenu iconClass="w-6 h-6" /> }
           </div>
         </div>
         <div class="md:self-center flex items-center ml-4">
@@ -90,15 +84,11 @@ export default component$(() => {
                   ) : null }
                 </li>
               )) }
-              <li class="md:hidden">
-                <LogoutButton />
-              </li>
             </ul>
           </nav>
 
           <div class="hidden items-center md:flex">
             <ToggleTheme iconClass="w-6 h-6" />
-            <LogoutButton />
           </div>
         </div>
       </div>

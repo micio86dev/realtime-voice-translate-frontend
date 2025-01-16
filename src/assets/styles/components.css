@@ -116,3 +116,26 @@
     transform: rotate(1turn);
   }
 }
+
+.circle {
+  transition: background-color 0.3s ease;
+  @apply m-auto flex h-40 w-40 items-center justify-center rounded-full bg-primary-700;
+  .animate-pulse {
+    animation: pulse 1.5s infinite ease-in-out;
+  }
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+    background-color: blue;
+  }
+  50% {
+    transform: scale(1.2); /* Aumenta la dimensione */
+    background-color: red; /* Cambia colore a rosso */
+  }
+  100% {
+    transform: scale(1); /* Torna alla dimensione originale */
+    background-color: blue; /* Torna al colore iniziale */
+  }
+}

@@ -1,68 +1,86 @@
 import {
   component$,
   useStore,
-  useSignal,
   $,
   getLocale,
   useOnDocument,
   noSerialize,
 } from '@builder.io/qwik';
-import BButton from "~/components/atoms/BButton";
 
 export default component$(() => {
-  const state = useStore({ text: '', recognize: undefined as any });
-  const isRecording = useSignal(false);
-  const isSending = useSignal(false);
-
-  // Funzione per avviare il riconoscimento
-  const startRecognition = $(() => {
-    if (state.recognize) {
-      state.text = '';
-      state.recognize.start();
-    } else {
-      console.error('SpeechRecognition non è stato inizializzato correttamente');
-    }
+  const state = useStore({
+    listening: false,
+    speaking: false,
+    message: '',
+    artyom: null as any,
   });
 
-  useOnDocument("qinit", $(() => {
-    if (typeof window !== 'undefined') {
-      const r = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+  const speak = $(() => {
+    state.artyom.say('Ciao come va?');
+  });
 
-      // Imposta le configurazioni di SpeechRecognition
-      r.lang = getLocale();
-      r.interimResults = true;
-      r.maxAlternatives = 1;
+  const artyomInit = $(() => {
+    const lang = getLocale();
 
-      r.onresult = (event: any) => {
-        const lastResult = event.results[0][0]
+    state.artyom.initialize({
+      lang: 'it-IT',
+      name: 'Alice',
+      continuous: true,
+      soundex: true,
+      listen: true,
+      debug: true,
+      mode: 'remote',
+      volume: 1,
+      speed: 1,
+    }).then(() => {
+      const voices = state.artyom.getVoices().filter((voice: any) => voice.lang.includes(lang) && voice.localService).map((voice: any) => voice.name);
+      console.log(voices, 'VOICES');
 
-        if (event.results[0].isFinal) {
-          state.text = lastResult.transcript;
+      state.artyom.remoteProcessorService((phrase: any) => {
+        state.speaking = true;
+        state.message = phrase.text;
+        if (phrase.isFinal) {
+          if (phrase.text !== '') {
+            // Send message to translate service
+            console.log({ text: state.message, lang: state.artyom.getLanguage() }, 'MESSAGE');
+          }
+          state.speaking = false;
         }
-      };
+      });
 
-      r.onstart = () => {
-        isRecording.value = true;
-      };
+      state.listening = true;
 
-      r.onend = () => {
-        isRecording.value = false;
-        isSending.value = true;
-        // TODO: Send text to server
-        isSending.value = false;
-      };
-      state.recognize = noSerialize(r);
+      speak();
+    }).catch((err: any) => {
+      state.artyom.say("Artyom couldn't be initialized, please check the console for errors");
+      console.log(err);
+    });
+  });
+
+  useOnDocument("qinit", $(async () => {
+    if (typeof window !== 'undefined') {
+      const ArtyomModule = await import('artyom.js');
+      const Artyom = ArtyomModule.default;
+      const artyomInstance = new Artyom();
+
+      // Inizializza Artyom lato client
+      state.artyom = noSerialize(artyomInstance);
+
+      artyomInit();
     }
   }));
 
   return (
-    <>
-      <div class="flex flex-col gap-2">
-        <BButton type="button" class="primary w-full" on-click={ startRecognition } loading={ isRecording.value }>
-          { $localize`Start recognize voice` }
-        </BButton>
+    <div>
+      <div
+        style={ {
+          backgroundColor: state.listening ? 'green' : 'gray',
+        } }
+        class={ `${ state.speaking ? 'animate-pulse' : '' } circle` }
+      >
+        { state.speaking ? 'Registrando...' : state.listening ? 'Ascoltando...' : 'Non in ascolto' }
       </div>
-      <p>{ state.text }</p>
-    </>
+      <h3 class="py-4 text-center">{ state.message }</h3>
+    </div>
   );
 });
