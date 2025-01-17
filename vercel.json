@@ -1,0 +1,15 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "src/entry.server.tsx",
+      "use": "@vercel/qwik"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "/src/entry.bun.tsx"
+    }
+  ]
+}

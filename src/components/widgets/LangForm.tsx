@@ -6,24 +6,35 @@ import {
   useOnDocument,
   noSerialize,
 } from '@builder.io/qwik';
+import Pusher from 'pusher-js';
+import { getFullLocale } from '~/utils/locale';
 
 export default component$(() => {
   const state = useStore({
     listening: false,
     speaking: false,
     message: '',
+    channelName: '',
     artyom: null as any,
   });
 
-  const speak = $(() => {
-    state.artyom.say('Ciao come va?');
+  const backendUrl = import.meta.env._API_URL;
+
+  const sendMessage = $((body: any) => {
+    fetch(`${ backendUrl }/send-message`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(body),
+    });
   });
 
   const artyomInit = $(() => {
     const lang = getLocale();
 
     state.artyom.initialize({
-      lang: 'it-IT',
+      lang: getFullLocale(),
       name: 'Alice',
       continuous: true,
       soundex: true,
@@ -40,19 +51,22 @@ export default component$(() => {
         state.speaking = true;
         state.message = phrase.text;
         if (phrase.isFinal) {
-          if (phrase.text !== '') {
+          if (phrase.text !== '' && state.channelName !== '') {
             // Send message to translate service
-            console.log({ text: state.message, lang: state.artyom.getLanguage() }, 'MESSAGE');
+            sendMessage({
+              channel: state.channelName,
+              source_lang: lang.toUpperCase(),
+              target_lang: "es".toUpperCase(),
+              message: phrase.text,
+            });
           }
           state.speaking = false;
         }
       });
 
       state.listening = true;
-
-      speak();
     }).catch((err: any) => {
-      state.artyom.say("Artyom couldn't be initialized, please check the console for errors");
+      state.artyom.say("Artyom couldn't be initialized, please refresh the page and try again.");
       console.log(err);
     });
   });
@@ -65,8 +79,19 @@ export default component$(() => {
 
       // Inizializza Artyom lato client
       state.artyom = noSerialize(artyomInstance);
-
       artyomInit();
+
+      const userId = crypto.randomUUID();
+      state.channelName = `user-${ userId }`;
+      const pusher = new Pusher('27991ede2e5f0b8d86d9', {
+        cluster: 'eu',
+      });
+
+      const channel = pusher.subscribe(state.channelName);
+      channel.bind('new-message', (data: any) => {
+        state.message = data.message;
+        state.artyom.say(data.message);
+      });
     }
   }));
 

@@ -39,7 +39,7 @@ export default defineConfig(({ command, mode }): UserConfig => {
         // Don't cache the server response in dev mode
         "Cache-Control": "public, max-age=0",
       },
-      port: parseInt(process.env.PORT ?? '3011'),
+      port: parseInt(process.env.PORT ?? '3012'),
     },
     resolve: {
       alias: {
