@@ -6,8 +6,8 @@
 
 # Development
 node_modules
+.env
 *.local
-bun.lockb
 
 # Cache
 .cache
@@ -29,8 +29,6 @@ lerna-debug.log*
 !.vscode/launch.json
 !.vscode/*.code-snippets
 
-.env
-
 .idea
 .DS_Store
 *.suo
@@ -43,8 +41,5 @@ lerna-debug.log*
 .yarn/*
 !.yarn/releases
 
-functions/server
-functions/node_modules
-.vercel
-
 # Vercel
+.vercel

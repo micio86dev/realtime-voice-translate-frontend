@@ -46,13 +46,13 @@
     "description": "$() function hook",
     "body": ["$(() => {", "  $0", "});", ""],
   },
-  "useTask": {
-    "scope": "javascriptreact,typescriptreact",
-    "prefix": "quseTask",
-    "description": "useTask$() function hook",
-    "body": ["useTask$(({ track }) => {", "  $0", "});", ""],
-  },
   "useVisibleTask": {
+    "scope": "javascriptreact,typescriptreact",
+    "prefix": "quseVisibleTask",
+    "description": "useVisibleTask$() function hook",
+    "body": ["useVisibleTask$(({ track }) => {", "  $0", "});", ""],
+  },
+  "useTask": {
     "scope": "javascriptreact,typescriptreact",
     "prefix": "quseTask$",
     "description": "useTask$() function hook",

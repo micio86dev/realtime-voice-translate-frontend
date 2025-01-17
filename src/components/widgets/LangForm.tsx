@@ -6,7 +6,6 @@ import {
   useOnDocument,
   noSerialize,
 } from '@builder.io/qwik';
-import Pusher from 'pusher-js';
 import { getFullLocale } from '~/utils/locale';
 
 export default component$(() => {
@@ -18,7 +17,7 @@ export default component$(() => {
     artyom: null as any,
   });
 
-  const backendUrl = import.meta.env._API_URL;
+  const backendUrl = import.meta.env.VITE_API_URL;
 
   const sendMessage = $((body: any) => {
     fetch(`${ backendUrl }/send-message`, {
@@ -82,14 +81,16 @@ export default component$(() => {
 
     const userId = crypto.randomUUID();
     state.channelName = `user-${ userId }`;
-    const pusher = new Pusher('27991ede2e5f0b8d86d9', {
-      cluster: 'eu',
-    });
 
-    const channel = pusher.subscribe(state.channelName);
-    channel.bind('new-message', (data: any) => {
-      state.message = data.message;
-      state.artyom.say(data.message);
+    import('pusher-js').then(PusherModule => {
+      const pusher = new PusherModule.default('27991ede2e5f0b8d86d9', {
+        cluster: 'eu',
+      });
+      const channel = pusher.subscribe(state.channelName);
+      channel.bind('new-message', (data: any) => {
+        state.message = data.message;
+        state.artyom.say(data.message);
+      });
     });
   }));
 

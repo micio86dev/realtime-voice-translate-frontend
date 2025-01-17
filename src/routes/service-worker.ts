@@ -1,33 +1,18 @@
-declare const self: ServiceWorkerGlobalScope;
-
-import { setupServiceWorker } from '@builder.io/qwik-city/service-worker';
+/*
+ * WHAT IS THIS FILE?
+ *
+ * The service-worker.ts file is used to have state of the art prefetching.
+ * https://qwik.dev/qwikcity/prefetching/overview/
+ *
+ * Qwik uses a service worker to speed up your site and reduce latency, ie, not used in the traditional way of offline.
+ * You can also use this file to add more functionality that runs in the service worker.
+ */
+import { setupServiceWorker } from "@builder.io/qwik-city/service-worker";
 
 setupServiceWorker();
 
-self.addEventListener('install', (event: ExtendableEvent) => {
-  event.waitUntil(
-    caches.open('my-cache').then((cache) => {
-      return cache.addAll([
-        '/',
-        '/index.html',
-        '/main.js',
-        '/styles.css',
-      ]);
-    })
-  );
-});
+addEventListener("install", () => self.skipWaiting());
 
-self.addEventListener('activate', (event: ExtendableEvent) => {
-  const cacheWhitelist = ['my-cache'];
-  event.waitUntil(
-    caches.keys().then((cacheNames) => {
-      return Promise.all(
-        cacheNames.map((cacheName) => {
-          if (!cacheWhitelist.includes(cacheName)) {
-            return caches.delete(cacheName);
-          }
-        })
-      );
-    })
-  );
-});
+addEventListener("activate", () => self.clients.claim());
+
+declare const self: ServiceWorkerGlobalScope;
