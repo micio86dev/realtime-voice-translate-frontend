@@ -18,12 +18,6 @@ errorOnDuplicatesPkgDeps(devDependencies, dependencies);
 export default defineConfig(({ command, mode }): UserConfig => {
   return {
     base: SITE.basePathname,
-    build: {
-      target: "es2020",
-      commonjsOptions: {
-        transformMixedEsModules: true,
-      },
-    },
     plugins: [
       qwikCity({
         // basePathname: SITE.basePathname,
