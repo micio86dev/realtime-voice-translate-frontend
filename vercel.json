@@ -17,8 +17,5 @@
   ],
   "env": {
     "BUN_INSTALL": "1"
-  },
-  "scripts": {
-    "build": "bun install && bun build"
   }
 }
