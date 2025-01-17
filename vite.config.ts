@@ -24,14 +24,6 @@ export default defineConfig(({ command, mode }): UserConfig => {
         transformMixedEsModules: true,
       },
     },
-    define: {
-      "process.env.NODE_ENV": JSON.stringify(mode),
-    },
-    esbuild: {
-      target: "es2020",
-    },
-    logLevel: "info",
-    publicDir: "public",
     plugins: [
       qwikCity({
         // basePathname: SITE.basePathname,
