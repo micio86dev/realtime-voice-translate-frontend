@@ -5,8 +5,6 @@ import {
   useContextProvider,
   useStore,
   getLocale,
-  $,
-  useOnDocument,
 } from "@builder.io/qwik";
 import {
   QwikCityProvider,
@@ -32,11 +30,6 @@ export default component$(() => {
   });
 
   useContextProvider(GlobalContext, globalStore);
-
-  useOnDocument("qinit", $(() => {
-    // const route = window.location.pathname;
-    // window.location.href = `/${ lang }`;
-  }));
 
   return (
     <QwikCityProvider>

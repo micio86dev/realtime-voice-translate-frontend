@@ -72,27 +72,25 @@ export default component$(() => {
   });
 
   useOnDocument("qinit", $(async () => {
-    if (typeof window !== 'undefined') {
-      const ArtyomModule = await import('artyom.js');
-      const Artyom = ArtyomModule.default;
-      const artyomInstance = new Artyom();
+    const ArtyomModule = await import('artyom.js');
+    const Artyom = ArtyomModule.default;
+    const artyomInstance = new Artyom();
 
-      // Inizializza Artyom lato client
-      state.artyom = noSerialize(artyomInstance);
-      artyomInit();
+    // Inizializza Artyom lato client
+    state.artyom = noSerialize(artyomInstance);
+    artyomInit();
 
-      const userId = crypto.randomUUID();
-      state.channelName = `user-${ userId }`;
-      const pusher = new Pusher('27991ede2e5f0b8d86d9', {
-        cluster: 'eu',
-      });
+    const userId = crypto.randomUUID();
+    state.channelName = `user-${ userId }`;
+    const pusher = new Pusher('27991ede2e5f0b8d86d9', {
+      cluster: 'eu',
+    });
 
-      const channel = pusher.subscribe(state.channelName);
-      channel.bind('new-message', (data: any) => {
-        state.message = data.message;
-        state.artyom.say(data.message);
-      });
-    }
+    const channel = pusher.subscribe(state.channelName);
+    channel.bind('new-message', (data: any) => {
+      state.message = data.message;
+      state.artyom.say(data.message);
+    });
   }));
 
   return (
