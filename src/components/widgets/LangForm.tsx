@@ -7,17 +7,26 @@ import {
   noSerialize,
 } from '@builder.io/qwik';
 import { getFullLocale } from '~/utils/locale';
+import SelectComponent from '~/components/atoms/SelectComponent';
 
 export default component$(() => {
-  const state = useStore({
+  const store = useStore({
     listening: false,
     speaking: false,
     message: '',
     channelName: '',
     artyom: null as any,
+    voices: [],
+    selectedVoice: 'Alice',
   });
 
   const backendUrl = import.meta.env.VITE_API_URL;
+
+  const changeVoice = $((event: Event) => {
+    const target = event.target as HTMLSelectElement;
+    store.selectedVoice = target.value;
+    store.artyom.ArtyomVoicesIdentifiers[getFullLocale()] = [store.selectedVoice];
+  });
 
   const sendMessage = $((body: any) => {
     fetch(`${ backendUrl }/send-message`, {
@@ -32,9 +41,8 @@ export default component$(() => {
   const artyomInit = $(() => {
     const lang = getLocale();
 
-    state.artyom.initialize({
+    store.artyom.initialize({
       lang: getFullLocale(),
-      name: 'Alice',
       continuous: true,
       soundex: true,
       listen: true,
@@ -43,30 +51,33 @@ export default component$(() => {
       volume: 1,
       speed: 1,
     }).then(() => {
-      const voices = state.artyom.getVoices().filter((voice: any) => voice.lang.includes(lang) && voice.localService).map((voice: any) => voice.name);
-      console.log(voices, 'VOICES');
+      const voices = store.artyom.getVoices()
+        .filter((voice: any) => voice.lang.includes(lang) && voice.localService)
+        .map((voice: any) => { return { name: voice.name, id: voice.name } });
+      store.voices = voices;
+      store.artyom.ArtyomVoicesIdentifiers[getFullLocale()] = voices.map((voice: any) => voice.id); // Set default order of voices
 
-      state.artyom.remoteProcessorService((phrase: any) => {
-        state.speaking = true;
-        state.message = phrase.text;
+      store.artyom.remoteProcessorService((phrase: any) => {
+        store.speaking = true;
+        store.message = phrase.text;
+
         if (phrase.isFinal) {
-          if (phrase.text !== '' && state.channelName !== '') {
+          if (phrase.text !== '' && store.channelName !== '') {
             // Send message to translate service
             sendMessage({
-              channel: state.channelName,
+              channel: store.channelName,
               source_lang: lang.toUpperCase(),
               target_lang: "es".toUpperCase(),
               message: phrase.text,
             });
           }
-          state.speaking = false;
+          store.speaking = false;
         }
       });
 
-      state.listening = true;
+      store.listening = true;
     }).catch((err: any) => {
-      state.artyom.say("Artyom couldn't be initialized, please refresh the page and try again.");
-      console.log(err);
+      console.error(err);
     });
   });
 
@@ -76,20 +87,22 @@ export default component$(() => {
     const artyomInstance = new Artyom();
 
     // Inizializza Artyom lato client
-    state.artyom = noSerialize(artyomInstance);
+    store.artyom = noSerialize(artyomInstance);
     artyomInit();
 
     const userId = crypto.randomUUID();
-    state.channelName = `user-${ userId }`;
+    store.channelName = `user-${ userId }`;
 
     import('pusher-js').then(PusherModule => {
       const pusher = new PusherModule.default('27991ede2e5f0b8d86d9', {
         cluster: 'eu',
       });
-      const channel = pusher.subscribe(state.channelName);
+      const channel = pusher.subscribe(store.channelName);
       channel.bind('new-message', (data: any) => {
-        state.message = data.message;
-        state.artyom.say(data.message);
+        store.message = data.message;
+        store.artyom.say(data.message, {
+          voice: 'Eddy (italiano (Italia))',
+        });
       });
     });
   }));
@@ -98,13 +111,15 @@ export default component$(() => {
     <div>
       <div
         style={ {
-          backgroundColor: state.listening ? 'green' : 'gray',
+          backgroundColor: store.listening ? 'green' : 'gray',
         } }
-        class={ `${ state.speaking ? 'animate-pulse' : '' } circle` }
+        class={ `${ store.speaking ? 'animate-pulse' : '' } circle` }
       >
-        { state.speaking ? 'Registrando...' : state.listening ? 'Ascoltando...' : 'Non in ascolto' }
+        { store.speaking ? 'Registrando...' : store.listening ? 'Ascoltando...' : 'Non in ascolto' }
       </div>
-      <h3 class="py-4 text-center">{ state.message }</h3>
+
+      <SelectComponent options={ store.voices } on-input={ changeVoice } name="voice" />
+      <h3 class="py-4 text-center">{ store.message }</h3>
     </div>
   );
 });
