@@ -12,7 +12,7 @@
   ],
   "trustedDependencies-annotation": "Needed for bun to allow running install scripts",
   "scripts": {
-    "build": "bun install && bun build src/entry.bun.ts",
+    "build": "bun install && qwik build",
     "build.client": "vite build && npm run i18n-translate",
     "build.preview": "vite build --ssr src/entry.preview.tsx",
     "build.server": "vite build -c adapters/bun/vite.config.ts",
