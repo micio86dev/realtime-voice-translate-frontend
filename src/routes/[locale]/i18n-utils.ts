@@ -10,7 +10,7 @@ import IT from "../../locales/message.it.json";
 
 // Make sure it's obvious when the default locale was selected
 // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-export const DEFAULT_LOCALE = navigator?.language?.split('-')[0] ?? 'en';
+export const DEFAULT_LOCALE = 'it';
 
 /**
  * This file is left for the developer to customize to get the behavior they want for localization.
