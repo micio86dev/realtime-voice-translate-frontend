@@ -2,17 +2,14 @@
   "version": 2,
   "builds": [
     {
-      "src": "src/index.ts",
-      "use": "@vercel/node",
-      "config": {
-        "maxDuration": 60
-      }
+      "src": "src/entry.ssr.tsx",
+      "use": "@vercel/node"
     }
   ],
   "routes": [
     {
       "src": "/(.*)",
-      "dest": "/src/index.ts"
+      "dest": "/src/entry.bun.ts"
     }
   ],
   "env": {
