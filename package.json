@@ -12,8 +12,7 @@
   ],
   "trustedDependencies-annotation": "Needed for bun to allow running install scripts",
   "scripts": {
-    "install": "curl -fsSL https://bun.sh/install | bash",
-    "build": "bun install && bun build",
+    "build": "bun install && bun build src/entry.bun.ts",
     "build.client": "vite build && npm run i18n-translate",
     "build.preview": "vite build --ssr src/entry.preview.tsx",
     "build.server": "vite build -c adapters/bun/vite.config.ts",
@@ -24,6 +23,7 @@
     "fmt.check": "prettier --check .",
     "i18n-extract": "node_modules/.bin/localize-extract -s \"dist/build/*.js\" -f json -o src/locales/message.en.json",
     "i18n-translate": "node_modules/.bin/localize-translate -s \"*.js\" -t src/locales/message.*.json -o dist/build/{{LOCALE}} -r ./dist/build",
+    "install": "curl -fsSL https://bun.sh/install | bash",
     "lint": "eslint \"src/**/*.ts*\"",
     "prei18n-extract": "vite build",
     "preview": "qwik build preview && vite preview --open",
