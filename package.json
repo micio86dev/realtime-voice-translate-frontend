@@ -12,7 +12,8 @@
   ],
   "trustedDependencies-annotation": "Needed for bun to allow running install scripts",
   "scripts": {
-    "build": "qwik build",
+    "install": "curl -fsSL https://bun.sh/install | bash",
+    "build": "bun install && bun build",
     "build.client": "vite build && npm run i18n-translate",
     "build.preview": "vite build --ssr src/entry.preview.tsx",
     "build.server": "vite build -c adapters/bun/vite.config.ts",
