@@ -108,7 +108,7 @@ export default component$(() => {
   }));
 
   return (
-    <div>
+    <div class="flex flex-col p-4 gap-4 items-center justify-center h-full w-full">
       <div
         style={ {
           backgroundColor: store.listening ? 'green' : 'gray',
@@ -118,7 +118,7 @@ export default component$(() => {
         { store.speaking ? 'Registrando...' : store.listening ? 'Ascoltando...' : 'Non in ascolto' }
       </div>
 
-      <SelectComponent options={ store.voices } on-input={ changeVoice } name="voice" />
+      <SelectComponent options={ store.voices } on-input={ changeVoice } name="voice" class="mt-4 m-auto" />
       <h3 class="py-4 text-center">{ store.message }</h3>
     </div>
   );

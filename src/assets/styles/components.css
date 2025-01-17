@@ -22,76 +22,9 @@
   main {
     @apply min-h-[calc(100vh-134px)] bg-slate-100 dark:bg-slate-800;
   }
-
-  section {
-    @apply mx-auto max-w-4xl p-4;
-  }
-
-  .list {
-    @apply flex flex-col flex-wrap gap-4 md:flex-row;
-  }
-
-  .row {
-    @apply grid grid-cols-1 gap-4;
-  }
-
-  .card {
-    @apply flex w-full flex-col gap-4 rounded-sm bg-gray-50 p-4 shadow dark:border-gray-700 dark:bg-gray-700;
-
-    &.bg-elevated {
-      @apply bg-slate-200 dark:bg-slate-600;
-      label {
-        @apply bg-slate-200 dark:bg-slate-600;
-      }
-      input {
-        @apply bg-white text-black;
-      }
-    }
-  }
-
-  .filters {
-    @apply block w-full rounded-md border border-gray-200 bg-white p-4 shadow dark:border-gray-700 dark:bg-gray-700;
-  }
-
-  .notification {
-    @apply p-4;
-
-    &.is-danger {
-      @apply bg-danger-700 font-semibold text-white;
-    }
-
-    &.is-success {
-      @apply bg-success-700 font-semibold text-white;
-    }
-  }
-
-  [data-aw-toggle-menu] path {
-    @apply transition;
-  }
-
-  [data-aw-toggle-menu].expanded g > path:first-child {
-    @apply translate-x-[-3px] translate-y-[15px] -rotate-45;
-  }
-
-  [data-aw-toggle-menu].expanded g > path:last-child {
-    @apply translate-x-[14px] translate-y-[-8px] rotate-45;
-  }
 }
 
-.badge {
-  @apply rounded-full bg-slate-200 px-2 dark:bg-slate-600;
-}
-
-.swiper {
-  @apply flex w-full flex-col gap-4 md:w-auto;
-  .swiper-slide {
-    @apply flex flex-col gap-4;
-  }
-}
-.swiper-pagination-bullet-active {
-  @apply bg-primary-700 !important;
-}
-
+/* Image */
 .image-wrapper {
   @apply h-[64px] w-[64px] overflow-hidden rounded-sm bg-white p-1;
 
@@ -119,8 +52,16 @@
 
 .circle {
   transition: background-color 0.3s ease;
-  @apply m-auto flex h-40 w-40 items-center justify-center rounded-full bg-primary-700;
-  .animate-pulse {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.4rem;
+  font-weight: 600;
+  width: 30vw;
+  height: 30vw;
+  border-radius: 50%;
+  margin: auto;
+  &.animate-pulse {
     animation: pulse 1.5s infinite ease-in-out;
   }
 }

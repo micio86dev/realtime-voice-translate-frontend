@@ -1,0 +1,10 @@
+.navbar {
+  @apply bg-white p-2 dark:bg-slate-800 flex items-center;
+  .logo {
+    @apply block flex h-full w-auto items-center justify-center;
+    .logo-img {
+      width: auto;
+      height: 60px;
+    }
+  }
+}

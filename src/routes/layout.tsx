@@ -4,6 +4,7 @@ import {
 } from "@builder.io/qwik";
 import { type RequestHandler } from "@builder.io/qwik-city";
 import { extractLang, useI18n } from "~/routes/[locale]/i18n-utils";
+import Navbar from "~/components/widgets/Navbar";
 
 export const onRequest: RequestHandler = ({ locale, params }) => {
   locale(extractLang(params.locale));
@@ -15,6 +16,7 @@ export default component$(() => {
   return (
     <>
       <main>
+        <Navbar />
         <Slot />
       </main>
     </>
