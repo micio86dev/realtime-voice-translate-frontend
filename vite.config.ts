@@ -25,6 +25,14 @@ export default defineConfig(({ command, mode }): UserConfig => {
       qwikVite(),
       tsconfigPaths(),
     ],
+    build: {
+      target: 'es2020',
+      ssr: true,
+    },
+    ssr: {
+      external: ['@builder.io/qwik'],
+      noExternal: true
+    },
     preview: {
       headers: {
         // Do cache the server response in preview (non-adapter production build)

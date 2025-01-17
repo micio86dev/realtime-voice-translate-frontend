@@ -28,7 +28,7 @@
     "lint": "eslint \"src/**/*.ts*\"",
     "prei18n-extract": "vite build",
     "preview": "qwik build preview && vite preview --open",
-    "serve": "bun server/entry.bun.js",
+    "serve": "bun server/entry.ssr.js",
     "start": "vite --open --mode ssr",
     "qwik": "qwik"
   },
