@@ -3,13 +3,13 @@
   "builds": [
     {
       "src": "src/entry.server.tsx",
-      "use": "@vercel/qwik"
+      "use": "@vercel/node"
     }
   ],
   "routes": [
     {
       "src": "/(.*)",
-      "dest": "/src/entry.bun.tsx"
+      "dest": "/src/entry.ssr.tsx"
     }
   ]
 }
