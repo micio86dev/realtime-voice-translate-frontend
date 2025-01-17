@@ -2,8 +2,11 @@
   "version": 2,
   "builds": [
     {
-      "src": "src/entry.ssr.tsx",
-      "use": "@vercel/node"
+      "src": "src/entry.bun.tsx",
+      "use": "@vercel/node",
+      "config": {
+        "maxDuration": 60
+      }
     }
   ],
   "routes": [
@@ -11,5 +14,11 @@
       "src": "/(.*)",
       "dest": "/src/entry.bun.ts"
     }
-  ]
+  ],
+  "env": {
+    "BUN_INSTALL": "1"
+  },
+  "scripts": {
+    "build": "bun install && bun build"
+  }
 }
