@@ -9,7 +9,7 @@ import LangForm from "~/components/widgets/LangForm";
 
 export default component$(() => {
   return (
-    <section>
+    <section class="section">
       <div class="row md:grid-cols-1">
         <LangForm />
       </div>

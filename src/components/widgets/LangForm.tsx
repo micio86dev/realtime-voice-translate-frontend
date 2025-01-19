@@ -7,7 +7,9 @@ import {
   noSerialize,
 } from '@builder.io/qwik';
 import { getFullLocale } from '~/utils/locale';
-import SelectComponent from '~/components/atoms/SelectComponent';
+import Select from '~/components/atoms/Inputs/Select';
+import Input from '~/components/atoms/Inputs/Input';
+import BButton from '~/components/atoms/Buttons/BButton';
 
 export default component$(() => {
   const store = useStore({
@@ -15,32 +17,97 @@ export default component$(() => {
     speaking: false,
     message: '',
     channelName: '',
+    sendingMessage: false,
     artyom: null as any,
     voices: [],
     selectedVoice: 'Alice',
+    receivedMessage: '',
+    sourceLang: getLocale(), // Default from the browser
+    targetLang: 'es',
+    supportedLangs: [
+      { name: $localize`English`, id: 'en', lang: 'en-GB' },
+      { name: $localize`Spanish`, id: 'es', lang: 'es-ES' },
+      { name: $localize`Italian`, id: 'it', lang: 'it-IT' },
+    ],
   });
 
   const backendUrl = import.meta.env.VITE_API_URL;
 
-  const changeVoice = $((event: Event) => {
-    const target = event.target as HTMLSelectElement;
-    store.selectedVoice = target.value;
-    store.artyom.ArtyomVoicesIdentifiers[getFullLocale()] = [store.selectedVoice];
+  const changeVoice = $((event?: Event) => {
+    if (event) {
+      const target = event.target as HTMLSelectElement;
+      store.selectedVoice = target.value;
+    }
+    const fullLang = store.supportedLangs.find((lang: any) => lang.id === store.sourceLang)
+    if (fullLang) {
+      store.artyom.ArtyomVoicesIdentifiers[fullLang.lang] = [store.selectedVoice];
+      console.log(store.artyom.ArtyomVoicesIdentifiers[fullLang.lang], 'B')
+    }
   });
 
-  const sendMessage = $((body: any) => {
+  // Set first of available voices
+  const setVoices = $(() => {
+    const voices = store.artyom.getVoices()
+      .filter((voice: any) => voice.lang.includes(store.targetLang) && voice.localService)
+      .map((voice: any) => { return { name: voice.name, id: voice.name } });
+    store.voices = [...voices as []];
+
+    // Set default order of voices
+    const fullLang = store.supportedLangs.find((lang: any) => lang.id === store.targetLang)
+    if (fullLang) {
+      store.artyom.ArtyomVoicesIdentifiers[fullLang.lang] = voices.map((voice: any) => voice.id);
+      console.log(store.artyom.ArtyomVoicesIdentifiers[fullLang.lang], 'A')
+    } else {
+      console.error('Selected lang is not supported bny Artyom');
+    }
+
+    if (voices.length > 0) {
+      store.selectedVoice = voices[0].id;
+      changeVoice()
+    }
+  });
+
+  const changeLang = $((event: Event) => {
+    const target = event.target as HTMLSelectElement;
+    store.sourceLang = target.value;
+  });
+
+  const changeTargetLang = $((event: Event) => {
+    const target = event.target as HTMLSelectElement;
+    store.targetLang = target.value;
+    setVoices();
+  });
+
+  // Set local message to send
+  const setMessage = $((event: Event) => {
+    const target = event.target as HTMLInputElement;
+    store.message = target.value;
+  });
+
+  // Send setted local message to backend
+  const sendMessage = $(() => {
+    store.sendingMessage = true;
+
+    const body = JSON.stringify({
+      channel: store.channelName,
+      source_lang: store.sourceLang.toUpperCase(),
+      target_lang: store.targetLang.toUpperCase(),
+      message: store.message,
+    });
+
     fetch(`${ backendUrl }/send-message`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(body),
+      body,
+    }).finally(() => {
+      store.sendingMessage = false;
+      store.message = '';
     });
   });
 
   const artyomInit = $(() => {
-    const lang = getLocale();
-
     store.artyom.initialize({
       lang: getFullLocale(),
       continuous: true,
@@ -51,25 +118,16 @@ export default component$(() => {
       volume: 1,
       speed: 1,
     }).then(() => {
-      const voices = store.artyom.getVoices()
-        .filter((voice: any) => voice.lang.includes(lang) && voice.localService)
-        .map((voice: any) => { return { name: voice.name, id: voice.name } });
-      store.voices = voices;
-      store.artyom.ArtyomVoicesIdentifiers[getFullLocale()] = voices.map((voice: any) => voice.id); // Set default order of voices
+      setVoices();
 
       store.artyom.remoteProcessorService((phrase: any) => {
         store.speaking = true;
-        store.message = phrase.text;
 
         if (phrase.isFinal) {
+          store.message = phrase.text;
           if (phrase.text !== '' && store.channelName !== '') {
             // Send message to translate service
-            sendMessage({
-              channel: store.channelName,
-              source_lang: lang.toUpperCase(),
-              target_lang: "es".toUpperCase(),
-              message: phrase.text,
-            });
+            sendMessage();
           }
           store.speaking = false;
         }
@@ -99,27 +157,33 @@ export default component$(() => {
       });
       const channel = pusher.subscribe(store.channelName);
       channel.bind('new-message', (data: any) => {
-        store.message = data.message;
-        store.artyom.say(data.message, {
-          voice: 'Eddy (italiano (Italia))',
-        });
+        store.receivedMessage = data.message;
+        store.artyom.say(data.message);
       });
     });
   }));
 
   return (
-    <div class="flex flex-col p-4 gap-4 items-center justify-center h-full w-full">
+    <div class="flex flex-col p-4 gap-4 h-screen">
       <div
         style={ {
           backgroundColor: store.listening ? 'green' : 'gray',
         } }
         class={ `${ store.speaking ? 'animate-pulse' : '' } circle` }
       >
-        { store.speaking ? 'Registrando...' : store.listening ? 'Ascoltando...' : 'Non in ascolto' }
       </div>
+      <h3 class="py-4 text-center">{ store.receivedMessage }</h3>
 
-      <SelectComponent options={ store.voices } on-input={ changeVoice } name="voice" class="mt-4 m-auto" />
-      <h3 class="py-4 text-center">{ store.message }</h3>
+      <div class="container flex flex-col gap-4">
+        <form preventdefault:submit onSubmit$={ sendMessage } class="flex flex-row w-full">
+          <Input name="message" placeholder={ $localize`Write a message` } label={ $localize`Write a message or speak` } value={ store.message } on-input={ setMessage } />
+          <BButton type="submit" class="primary" iconRight="send" loading={ store.sendingMessage } disabled={ !store.message }>{ $localize`Send` }</BButton>
+        </form>
+        <Select options={ store.supportedLangs } label={ $localize`Your language` } onInput={ changeLang } selected={ store.sourceLang } name="lang" />
+        <Select options={ store.voices } onInput={ changeVoice } label={ $localize`Choose a voice` } name="voice" />
+
+        <Select options={ store.supportedLangs } label={ $localize`Target language` } onInput={ changeTargetLang } selected={ store.targetLang } name="target_lang" />
+      </div>
     </div>
   );
 });

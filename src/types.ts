@@ -12,7 +12,7 @@ export interface InputTextProps {
   step?: number;
   value?: any;
   required?: boolean;
-  "on-input"?: any;
+  onInput?: any;
 }
 
 export interface InputSelectProps {
@@ -25,7 +25,7 @@ export interface InputSelectProps {
   selected?: string;
   required?: boolean;
   options?: any[];
-  "on-input"?: any;
+  onInput?: any;
 }
 
 export interface Role {

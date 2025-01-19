@@ -10,6 +10,7 @@ export default component$(() => {
       <div class="logo">
         <ImgLogo class="logo-img" />
       </div>
+      <h1>{ $localize`Qwik Chat` }</h1>
     </div>
   );
 });

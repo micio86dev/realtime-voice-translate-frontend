@@ -1,5 +1,5 @@
 import { component$ } from "@builder.io/qwik";
-import type { InputSelectProps } from "../../types";
+import type { InputSelectProps } from "~/types";
 
 export default component$((props: InputSelectProps) => {
 
@@ -11,7 +11,7 @@ export default component$((props: InputSelectProps) => {
         name={ props.name }
         required={ props.required }
         autocomplete="new-password"
-        onInput$={ props["on-input"] }
+        onInput$={ props.onInput }
       >
         { props.placeholder && <option value="">{ props.placeholder }</option> }
         { props.options?.map((option: any) => (

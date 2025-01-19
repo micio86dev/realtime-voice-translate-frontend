@@ -12,7 +12,7 @@ form {
 }
 
 .field {
-  @apply relative mt-2 w-full;
+  @apply relative w-full;
 }
 .field input.small {
   @apply h-9 text-xs;
