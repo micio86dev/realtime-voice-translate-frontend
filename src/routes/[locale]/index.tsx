@@ -9,8 +9,8 @@ import LangForm from "~/components/widgets/LangForm";
 
 export default component$(() => {
   return (
-    <section class="section">
-      <div class="row md:grid-cols-1">
+    <section class="h-[calc(90vh)]">
+      <div class="row md:grid-cols-1 h-full">
         <LangForm />
       </div>
     </section>

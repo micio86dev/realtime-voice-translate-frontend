@@ -20,7 +20,7 @@
   }
 
   main {
-    @apply min-h-[calc(100vh)] bg-white dark:bg-slate-800;
+    @apply bg-white pt-[calc(10vh)] dark:bg-slate-800;
   }
 }
 
@@ -64,7 +64,7 @@
   &.animate-pulse {
     animation: pulse 1.5s infinite ease-in-out;
   }
-  @apply md:w-[calc(30vw)] md:h-[calc(30vw)];
+  @apply md:h-[calc(30vw)] md:w-[calc(30vw)];
 }
 
 @keyframes pulse {

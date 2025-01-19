@@ -17,6 +17,8 @@ export default component$(() => {
     speaking: false,
     message: '',
     channelName: '',
+    pusher: null as any,
+    channel: null as any,
     sendingMessage: false,
     artyom: null as any,
     voices: [],
@@ -24,6 +26,7 @@ export default component$(() => {
     receivedMessage: '',
     sourceLang: getLocale(), // Default from the browser
     targetLang: 'es',
+    onlineUsers: [],
     supportedLangs: [
       { name: $localize`English`, id: 'en', lang: 'en-GB' },
       { name: $localize`Spanish`, id: 'es', lang: 'es-ES' },
@@ -152,11 +155,38 @@ export default component$(() => {
     store.channelName = `user-${ userId }`;
 
     import('pusher-js').then(PusherModule => {
-      const pusher = new PusherModule.default('27991ede2e5f0b8d86d9', {
+      store.pusher = noSerialize(new PusherModule.default('27991ede2e5f0b8d86d9', {
         cluster: 'eu',
+        authEndpoint: `${ backendUrl }/pusher/auth`,
+        auth: {
+          params: {
+            user_id: userId,
+          },
+        },
+      }));
+      const presenceChannel = store.pusher.subscribe('presence-chat');
+
+      // When a user subscribes
+      presenceChannel.bind('pusher:subscription_succeeded', (members: any) => {
+        console.log('Users online:', members.members);
+        members.each((member: any) => {
+          console.log(`User subscribed: ${ member.info.name }`);
+        });
       });
-      const channel = pusher.subscribe(store.channelName);
-      channel.bind('new-message', (data: any) => {
+
+      // When a user joins
+      presenceChannel.bind('pusher:member_added', (member: any) => {
+        console.log(`${ member.info.name } joined`);
+      });
+
+      // When a user leaves
+      presenceChannel.bind('pusher:member_removed', (member: any) => {
+        console.log(`${ member.info.name } leaved`);
+      });
+
+      // Subscribe me to my channel (listener)
+      store.channel = noSerialize(store.pusher.subscribe(store.channelName));
+      store.channel.bind('new-message', (data: any) => {
         store.receivedMessage = data.message;
         store.artyom.say(data.message);
       });
@@ -164,7 +194,7 @@ export default component$(() => {
   }));
 
   return (
-    <div class="flex flex-col p-4 gap-4 h-screen">
+    <div class="flex flex-col p-4 gap-4 h-full">
       <div
         style={ {
           backgroundColor: store.listening ? 'green' : 'gray',
