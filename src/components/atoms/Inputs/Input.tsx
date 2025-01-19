@@ -16,7 +16,7 @@ export default component$((props: InputTextProps) => {
         max={ props.max }
         value={ props.value }
         step={ props.step }
-        onInput$={ props["on-input"] }
+        onInput$={ props.onInput }
       />
     </div>
   );

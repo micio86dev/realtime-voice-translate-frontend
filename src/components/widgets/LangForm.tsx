@@ -206,7 +206,7 @@ export default component$(() => {
 
       <div class="container flex flex-col gap-4">
         <form preventdefault:submit onSubmit$={ sendMessage } class="flex flex-row w-full">
-          <Input name="message" placeholder={ $localize`Write a message` } label={ $localize`Write a message or speak` } value={ store.message } on-input={ setMessage } />
+          <Input name="message" placeholder={ $localize`Write a message` } label={ $localize`Write a message or speak` } value={ store.message } onInput={ setMessage } />
           <BButton type="submit" class="primary" iconRight="send" loading={ store.sendingMessage } disabled={ !store.message }>{ $localize`Send` }</BButton>
         </form>
         <Select options={ store.supportedLangs } label={ $localize`Your language` } onInput={ changeLang } selected={ store.sourceLang } name="lang" />
