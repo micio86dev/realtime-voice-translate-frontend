@@ -6,7 +6,6 @@ import {
   useOnDocument,
   noSerialize,
 } from '@builder.io/qwik';
-import { getFullLocale } from '~/utils/locale';
 import Select from '~/components/atoms/Inputs/Select';
 import Input from '~/components/atoms/Inputs/Input';
 import BButton from '~/components/atoms/Buttons/BButton';
@@ -46,25 +45,26 @@ export default component$(() => {
     const fullLang = store.supportedLangs.find((lang: any) => lang.id === store.sourceLang)
     if (fullLang) {
       store.artyom.ArtyomVoicesIdentifiers[fullLang.lang] = [store.selectedVoice];
-      console.log(store.artyom.ArtyomVoicesIdentifiers[fullLang.lang], 'B')
     }
   });
 
   // Set first of available voices
   const setVoices = $(() => {
-    console.log(store.artyom.getVoices(), 'C')
     const voices = store.artyom.getVoices()
-      .filter((voice: any) => voice.lang.includes(store.targetLang) && voice.localService)
+      .filter((voice: any) => voice.lang.includes(store.sourceLang) && voice.localService)
       .map((voice: any) => { return { name: voice.name, id: voice.name } });
     store.voices = [...voices as []];
 
+    if (!store.sourceLang) {
+      return;
+    }
+
     // Set default order of voices
-    const fullLang = store.supportedLangs.find((lang: any) => lang.id === store.targetLang)
+    const fullLang = store.supportedLangs.find((lang: any) => lang.id === store.sourceLang)
     if (fullLang) {
       store.artyom.ArtyomVoicesIdentifiers[fullLang.lang] = voices.map((voice: any) => voice.id);
-      console.log(store.artyom.ArtyomVoicesIdentifiers[fullLang.lang], 'A')
     } else {
-      console.error('Selected lang is not supported bny Artyom');
+      console.error('Selected lang is not supported by Artyom');
     }
 
     if (voices.length > 0) {
@@ -73,29 +73,12 @@ export default component$(() => {
     }
   });
 
-  const changeLang = $((event: Event) => {
-    const target = event.target as HTMLSelectElement;
-    store.sourceLang = target.value;
-  });
-
-  const changeTargetLang = $((event: Event) => {
-    const target = event.target as HTMLSelectElement;
-    store.targetLang = target.value;
-    setVoices();
-  });
-
-  // Set local message to send
-  const setMessage = $((event: Event) => {
-    const target = event.target as HTMLInputElement;
-    store.message = target.value;
-  });
-
   // Send setted local message to backend
   const sendMessage = $(() => {
     store.sendingMessage = true;
 
     const body = JSON.stringify({
-      channel: store.channelName,
+      user_id: store.selectedUser,
       source_lang: store.sourceLang.toUpperCase(),
       target_lang: store.targetLang.toUpperCase(),
       message: store.message,
@@ -120,8 +103,11 @@ export default component$(() => {
 
     // Inizializza Artyom lato client
     store.artyom = noSerialize(artyomInstance);
+
+    const lang = store.supportedLangs.find((lang: any) => lang.id === store.sourceLang)?.lang || 'en-GB';
+
     store.artyom.initialize({
-      lang: getFullLocale(),
+      lang,
       continuous: true,
       soundex: true,
       listen: true,
@@ -135,6 +121,8 @@ export default component$(() => {
       store.artyom.remoteProcessorService((phrase: any) => {
         if (!store.selectedUser) {
           alert($localize`Please, choose a user`);
+        } if (!store.targetLang) {
+          alert($localize`Please, choose a target language`);
         } else {
           store.speaking = true;
 
@@ -152,8 +140,25 @@ export default component$(() => {
       store.listening = true;
     }).catch((err: any) => {
       console.error(err);
-      alert($localize`Error initializing your microphone`);
     });
+  });
+
+  const changeLang = $((event: Event) => {
+    const target = event.target as HTMLSelectElement;
+    store.sourceLang = target.value;
+
+    setVoices();
+  });
+
+  const changeTargetLang = $((event: Event) => {
+    const target = event.target as HTMLSelectElement;
+    store.targetLang = target.value;
+  });
+
+  // Set local message to send
+  const setMessage = $((event: Event) => {
+    const target = event.target as HTMLInputElement;
+    store.message = target.value;
   });
 
   const addMember = $((member: any) => {
@@ -190,20 +195,20 @@ export default component$(() => {
 
     // When a user joins
     presenceChannel.bind('pusher:member_added', (member: any) => {
-      console.log(`${ member } joined`);
-      addMember(member);
+      console.log(`${ member.id } joined`);
+      addMember({ id: member.id, name: member.info.name });
     });
 
     // When a user leaves
     presenceChannel.bind('pusher:member_removed', (member: any) => {
-      console.log(`${ member } leaved`);
-      removeMember(member);
+      console.log(`${ member.id } leaved`);
+      removeMember(member.id);
     });
   });
 
   const initPusher = $(() => {
     store.userId = crypto.randomUUID();
-    store.channelName = `user-${ store.userId }`;
+    store.channelName = 'chat';
 
     // Init pusher
     import('pusher-js').then(PusherModule => {
@@ -216,22 +221,24 @@ export default component$(() => {
           },
         },
       }));
+
       initPresenceChannel();
 
       // Subscribe me to my channel (listener)
       store.channel = noSerialize(store.pusher.subscribe(store.channelName));
       store.channel.bind('new-message', (data: any) => {
-        store.receivedMessage = data.message;
-        store.artyom.say(data.message);
+        console.log('new-message', data);
+        if (data.user_id === store.userId) {
+          store.receivedMessage = data.message;
+          store.artyom.say(data.message);
+        }
       });
     });
   });
 
-  useOnDocument("qinit", $(() => {
-    setTimeout(async () => {
-      await artyomInit();
-    }, 3000);
-
+  useOnDocument("qinit", $(async () => {
+    await artyomInit();
+    setVoices();
     initPusher();
   }));
 
@@ -247,17 +254,16 @@ export default component$(() => {
       <h3 class="py-4 text-center">{ store.receivedMessage }</h3>
 
       <div class="container flex flex-col gap-4">
-        { store.onlineUsers.length > 0 && <Select options={ store.onlineUsers } onInput={ selectUser } label={ $localize`Choose a user` } placeholder={ $localize`Choose a user` } selected={ store.selectedUser } name="user" /> }
-
         { store.selectedUser && <form preventdefault:submit onSubmit$={ sendMessage } class="flex flex-row w-full">
           <Input name="message" placeholder={ $localize`Write a message` } label={ $localize`Write a message or speak` } value={ store.message } onInput={ setMessage } />
           <BButton type="submit" class="primary" iconRight="send" loading={ store.sendingMessage } disabled={ !store.message }>{ $localize`Send` }</BButton>
         </form> }
 
         { store.supportedLangs.length > 0 && <Select options={ store.supportedLangs } label={ $localize`Your language` } placeholder={ $localize`Select your language` } onInput={ changeLang } selected={ store.sourceLang } name="lang" /> }
-
-        { store.supportedLangs.length > 0 && <Select options={ store.supportedLangs } label={ $localize`Target language` } placeholder={ $localize`Select target language` } onInput={ changeTargetLang } selected={ store.targetLang } name="target_lang" /> }
         { store.voices.length > 0 && <Select options={ store.voices } onInput={ changeVoice } label={ $localize`Choose a voice` } name="voice" /> }
+
+        { store.onlineUsers.length > 0 && <Select options={ store.onlineUsers } onInput={ selectUser } label={ $localize`Choose a user` } placeholder={ $localize`Choose a user` } selected={ store.selectedUser } name="user" /> }
+        { store.selectedUser && <Select options={ store.supportedLangs } label={ $localize`Target language` } placeholder={ $localize`Select target language` } onInput={ changeTargetLang } selected={ store.targetLang } name="target_lang" /> }
       </div>
     </div>
   );
