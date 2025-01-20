@@ -26,7 +26,6 @@ export default component$(() => {
     selectedVoice: 'Alice',
     receivedMessage: '',
     sourceLang: getLocale(), // Default from the browser
-    targetLang: '',
     onlineUsers: [] as any,
     selectedUser: null as any,
     supportedLangs: [
@@ -97,7 +96,8 @@ export default component$(() => {
       membersIds.forEach((id: string) => {
         if (id !== store.userId) {
           const member = members.members[id];
-          console.log(`User subscribed: ${ id } - ${ JSON.stringify(member) }`);
+          console.log(`User subscribed: ${ id }`);
+
           addMember({
             id,
             name: member.name,
@@ -109,7 +109,8 @@ export default component$(() => {
 
     // When a user joins
     presenceChannel.bind('pusher:member_added', (member: Member) => {
-      console.log(`${ JSON.stringify(member) } joined`);
+      console.log(`${ member.id } joined`);
+
       addMember({
         id: member.id,
         name: member.info.name,
@@ -119,7 +120,8 @@ export default component$(() => {
 
     // When a user leaves
     presenceChannel.bind('pusher:member_removed', (member: Member) => {
-      console.log(`${ JSON.stringify(member) } leaved`);
+      console.log(`${ member.id } leaved`);
+
       removeMember(member);
     });
   });
@@ -128,10 +130,17 @@ export default component$(() => {
   const sendMessage = $(() => {
     store.sendingMessage = true;
 
+    if (!store.selectedUser) {
+      alert($localize`Please, choose a user`);
+      return;
+    }
+
+    const target_lang = store.onlineUsers.find((user: Member) => user.id === store.selectedUser)?.lang;
+
     const body = JSON.stringify({
       user_id: store.selectedUser,
       source_lang: store.sourceLang.toUpperCase(),
-      target_lang: store.targetLang.toUpperCase(),
+      target_lang,
       message: store.message,
     });
 
@@ -172,8 +181,6 @@ export default component$(() => {
       store.artyom.remoteProcessorService((phrase: Phrase) => {
         if (!store.selectedUser) {
           alert($localize`Please, choose a user`);
-        } if (!store.targetLang) {
-          alert($localize`Please, choose a target language`);
         } else {
           store.speaking = true;
 
@@ -246,8 +253,6 @@ export default component$(() => {
   const selectUser = $((event: Event) => {
     const target = event.target as HTMLSelectElement;
     store.selectedUser = target.value;
-    store.targetLang = store.onlineUsers.find((user: Member) => user.id === store.selectedUser)?.lang;
-    console.log(store.targetLang, 'targetLang');
   });
 
   useOnDocument("qinit", $(async () => {
@@ -273,6 +278,8 @@ export default component$(() => {
           <Input name="message" placeholder={ $localize`Write a message` } label={ $localize`Write a message or speak` } value={ store.message } onInput={ setMessage } />
           <BButton type="submit" class="primary" iconRight="send" loading={ store.sendingMessage } disabled={ !store.message }>{ $localize`Send` }</BButton>
         </form> }
+
+        { JSON.stringify(store.onlineUsers.find((user: Member) => user.id === store.selectedUser)) }
 
         { store.supportedLangs.length > 0 && <Select options={ store.supportedLangs } label={ $localize`Your language` } placeholder={ $localize`Select your language` } onInput={ changeLang } selected={ store.sourceLang } name="lang" /> }
         { store.voices.length > 0 && <Select options={ store.voices } onInput={ changeVoice } label={ $localize`Choose a voice` } name="voice" /> }
