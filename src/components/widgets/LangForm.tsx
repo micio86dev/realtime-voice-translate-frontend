@@ -9,6 +9,7 @@ import {
 import Select from '~/components/atoms/Inputs/Select';
 import Input from '~/components/atoms/Inputs/Input';
 import BButton from '~/components/atoms/Buttons/BButton';
+import type { Message, Voice, Lang, Phrase, Member, Members } from '~/types';
 
 export default component$(() => {
   const store = useStore({
@@ -51,8 +52,8 @@ export default component$(() => {
   // Set first of available voices
   const setVoices = $(() => {
     const voices = store.artyom.getVoices()
-      .filter((voice: any) => voice.lang.includes(store.sourceLang) && voice.localService)
-      .map((voice: any) => { return { name: voice.name, id: voice.name } });
+      .filter((voice: Voice) => voice.lang.includes(store.sourceLang) && voice.localService)
+      .map((voice: Voice) => { return { name: voice.name, id: voice.name } });
     store.voices = [...voices as []];
 
     if (!store.sourceLang) {
@@ -60,9 +61,9 @@ export default component$(() => {
     }
 
     // Set default order of voices
-    const fullLang = store.supportedLangs.find((lang: any) => lang.id === store.sourceLang)
+    const fullLang = store.supportedLangs.find((lang: Lang) => lang.id === store.sourceLang)
     if (fullLang) {
-      store.artyom.ArtyomVoicesIdentifiers[fullLang.lang] = voices.map((voice: any) => voice.id);
+      store.artyom.ArtyomVoicesIdentifiers[fullLang.lang] = voices.map((voice: Voice) => voice.id);
     } else {
       console.error('Selected lang is not supported by Artyom');
     }
@@ -71,6 +72,56 @@ export default component$(() => {
       store.selectedVoice = voices[0].id;
       changeVoice()
     }
+  });
+
+  const removeMember = $((member: Member) => {
+    store.onlineUsers = store.onlineUsers.filter((m: Member) => m.id !== member.id);
+  });
+
+  const addMember = $((member: Member) => {
+    if (store.onlineUsers.find((m: Member) => m.id === member.id)) {
+      // If exists, update it
+      store.onlineUsers = store.onlineUsers.filter((mx: Member) => mx.id === member.id ? mx : member);
+    } else {
+      store.onlineUsers.push(member);
+    }
+  });
+
+  const initPresenceChannel = $(() => {
+    const presenceChannel = store.pusher.subscribe('presence-chat');
+
+    // When a user subscribes
+    presenceChannel.bind('pusher:subscription_succeeded', (members: Members) => {
+      const membersIds = Object.keys(members.members);
+
+      membersIds.forEach((id: string) => {
+        if (id !== store.userId) {
+          const member = members.members[id];
+          console.log(`User subscribed: ${ id } - ${ JSON.stringify(member) }`);
+          addMember({
+            id,
+            name: member.name,
+            lang: member.lang,
+          });
+        }
+      });
+    });
+
+    // When a user joins
+    presenceChannel.bind('pusher:member_added', (member: Member) => {
+      console.log(`${ JSON.stringify(member) } joined`);
+      addMember({
+        id: member.id,
+        name: member.info.name,
+        lang: member.info.lang,
+      });
+    });
+
+    // When a user leaves
+    presenceChannel.bind('pusher:member_removed', (member: Member) => {
+      console.log(`${ JSON.stringify(member) } leaved`);
+      removeMember(member);
+    });
   });
 
   // Send setted local message to backend
@@ -104,7 +155,7 @@ export default component$(() => {
     // Inizializza Artyom lato client
     store.artyom = noSerialize(artyomInstance);
 
-    const lang = store.supportedLangs.find((lang: any) => lang.id === store.sourceLang)?.lang || 'en-GB';
+    const lang = store.supportedLangs.find((lang: Lang) => lang.id === store.sourceLang)?.lang || 'en-GB';
 
     store.artyom.initialize({
       lang,
@@ -118,7 +169,7 @@ export default component$(() => {
     }).then(() => {
       setVoices();
 
-      store.artyom.remoteProcessorService((phrase: any) => {
+      store.artyom.remoteProcessorService((phrase: Phrase) => {
         if (!store.selectedUser) {
           alert($localize`Please, choose a user`);
         } if (!store.targetLang) {
@@ -143,71 +194,10 @@ export default component$(() => {
     });
   });
 
-  const changeLang = $((event: Event) => {
-    const target = event.target as HTMLSelectElement;
-    store.sourceLang = target.value;
-
-    setVoices();
-  });
-
-  const changeTargetLang = $((event: Event) => {
-    const target = event.target as HTMLSelectElement;
-    store.targetLang = target.value;
-  });
-
-  // Set local message to send
-  const setMessage = $((event: Event) => {
-    const target = event.target as HTMLInputElement;
-    store.message = target.value;
-  });
-
-  const addMember = $((member: any) => {
-    store.onlineUsers.push(member);
-  });
-
-  const removeMember = $((member: any) => {
-    store.onlineUsers = store.onlineUsers.filter((m: any) => m.id !== member.id);
-  });
-
-  const selectUser = $((event: Event) => {
-    const target = event.target as HTMLSelectElement;
-    store.selectedUser = target.value;
-  });
-
-  const initPresenceChannel = $(() => {
-    const presenceChannel = store.pusher.subscribe('presence-chat');
-
-    // When a user subscribes
-    presenceChannel.bind('pusher:subscription_succeeded', (members: any) => {
-      const membersIds = Object.keys(members.members);
-
-      membersIds.forEach((id: string) => {
-        if (id !== store.userId) {
-          const member = members.members[id];
-          console.log(`User subscribed: ${ id } - ${ member.name }`);
-          addMember({
-            id,
-            name: member.name,
-          });
-        }
-      });
-    });
-
-    // When a user joins
-    presenceChannel.bind('pusher:member_added', (member: any) => {
-      console.log(`${ member.id } joined`);
-      addMember({ id: member.id, name: member.info.name });
-    });
-
-    // When a user leaves
-    presenceChannel.bind('pusher:member_removed', (member: any) => {
-      console.log(`${ member.id } leaved`);
-      removeMember(member.id);
-    });
-  });
-
   const initPusher = $(() => {
-    store.userId = crypto.randomUUID();
+    if (!store.userId) {
+      store.userId = crypto.randomUUID();
+    }
     store.channelName = 'chat';
 
     // Init pusher
@@ -218,6 +208,7 @@ export default component$(() => {
         auth: {
           params: {
             user_id: store.userId,
+            lang: store.sourceLang.toUpperCase(),
           },
         },
       }));
@@ -226,7 +217,7 @@ export default component$(() => {
 
       // Subscribe me to my channel (listener)
       store.channel = noSerialize(store.pusher.subscribe(store.channelName));
-      store.channel.bind('new-message', (data: any) => {
+      store.channel.bind('new-message', (data: Message) => {
         console.log('new-message', data);
         if (data.user_id === store.userId) {
           store.receivedMessage = data.message;
@@ -234,6 +225,29 @@ export default component$(() => {
         }
       });
     });
+  });
+
+  const changeLang = $((event: Event) => {
+    const target = event.target as HTMLSelectElement;
+    store.sourceLang = target.value;
+
+    setVoices();
+
+    store.pusher.disconnect();
+    initPusher();
+  });
+
+  // Set local message to send
+  const setMessage = $((event: Event) => {
+    const target = event.target as HTMLInputElement;
+    store.message = target.value;
+  });
+
+  const selectUser = $((event: Event) => {
+    const target = event.target as HTMLSelectElement;
+    store.selectedUser = target.value;
+    store.targetLang = store.onlineUsers.find((user: Member) => user.id === store.selectedUser)?.lang;
+    console.log(store.targetLang, 'targetLang');
   });
 
   useOnDocument("qinit", $(async () => {
@@ -252,6 +266,7 @@ export default component$(() => {
       >
       </div>
       <h3 class="py-4 text-center">{ store.receivedMessage }</h3>
+      { store.userId }
 
       <div class="container flex flex-col gap-4">
         { store.selectedUser && <form preventdefault:submit onSubmit$={ sendMessage } class="flex flex-row w-full">
@@ -263,7 +278,6 @@ export default component$(() => {
         { store.voices.length > 0 && <Select options={ store.voices } onInput={ changeVoice } label={ $localize`Choose a voice` } name="voice" /> }
 
         { store.onlineUsers.length > 0 && <Select options={ store.onlineUsers } onInput={ selectUser } label={ $localize`Choose a user` } placeholder={ $localize`Choose a user` } selected={ store.selectedUser } name="user" /> }
-        { store.selectedUser && <Select options={ store.supportedLangs } label={ $localize`Target language` } placeholder={ $localize`Select target language` } onInput={ changeTargetLang } selected={ store.targetLang } name="target_lang" /> }
       </div>
     </div>
   );

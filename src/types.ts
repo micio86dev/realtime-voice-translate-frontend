@@ -144,3 +144,41 @@ export interface MsgErrors {
     text: string;
   };
 }
+
+export interface Lang {
+  id: string;
+  name: string;
+  lang: string;
+}
+
+export interface Voice {
+  id: string;
+  name: string;
+  localService: boolean;
+  lang: string;
+}
+
+export interface Phrase {
+  id: string;
+  text: string;
+  isFinal: boolean;
+}
+
+export interface Member {
+  id: string;
+  name: string;
+  lang: string;
+  info?: any;
+}
+
+export interface Members {
+  members: any;
+}
+
+export interface Message {
+  id: string;
+  text: string;
+  channelId: string;
+  user_id: string;
+  message: string;
+}

@@ -1,0 +1,6 @@
+.local-video {
+  @apply absolute right-10 top-[calc(10vh)] flex aspect-video w-[calc(20vw)] flex-col gap-4;
+  video {
+    @apply aspect-video rounded-md bg-black object-cover;
+  }
+}

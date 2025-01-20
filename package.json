@@ -52,6 +52,7 @@
     "@angular/localize": "^16.2.2",
     "@tailwindcss/typography": "^0.5.13",
     "artyom.js": "^1.0.6",
+    "peerjs": "1.5.4",
     "pusher-js": "^8.4.0-rc2"
   }
 }
