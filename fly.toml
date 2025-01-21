@@ -10,7 +10,7 @@ min_machines_running = 0
 processes = [ "app" ]
 
 [build]
-  builder = "heroku/buildpacks:20"
+  builder = "heroku/builder:*"
 
 [[vm]]
 cpu_kind = "shared"
