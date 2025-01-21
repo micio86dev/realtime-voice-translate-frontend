@@ -1,13 +1,20 @@
 import {
   component$,
 } from '@builder.io/qwik';
+import { Image } from '@unpic/qwik';
 
 export default component$(() => {
 
   return (
     <div class="navbar">
       <div class="logo">
-        <img class="logo-img" src="/images/logo.webp" alt="Logo" />
+        <Image
+          src="/images/logo.webp"
+          layout="constrained"
+          width={ 64 }
+          height={ 64 }
+          alt="Logo"
+        />
       </div>
       <h1>{ $localize`Realtime Voice Translate` }</h1>
     </div>
