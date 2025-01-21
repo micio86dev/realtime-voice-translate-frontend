@@ -1,8 +1,4 @@
-import {
-  component$,
-  useVisibleTask$,
-  getLocale,
-} from "@builder.io/qwik";
+import { component$, useVisibleTask$, getLocale } from "@builder.io/qwik";
 import type { DocumentHead } from "@builder.io/qwik-city";
 import { useNavigate } from "@builder.io/qwik-city";
 import { SITE } from "~/config.mjs";
@@ -13,12 +9,10 @@ export default component$(() => {
 
   // eslint-disable-next-line qwik/no-use-visible-task
   useVisibleTask$(() => {
-    nav(`/${ lang }`)
+    nav(`/${lang}`);
   });
 
-  return (
-    <></>
-  );
+  return <></>;
 });
 
 export const head: DocumentHead = {

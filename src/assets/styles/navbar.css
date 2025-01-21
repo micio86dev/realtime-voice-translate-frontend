@@ -2,7 +2,7 @@
   @apply fixed left-0 right-0 top-0 z-50 flex h-[calc(10vh)] flex-row items-center gap-4 bg-white p-2 dark:bg-slate-800;
   .logo {
     .logo-img {
-      @apply p-2 h-12 w-auto md:h-24;
+      @apply h-12 w-auto p-2 md:h-24;
     }
   }
   h1 {

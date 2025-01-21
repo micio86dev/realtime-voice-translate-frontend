@@ -138,7 +138,7 @@ export interface Text {
 }
 
 export interface MsgErrors {
-  errors?: any,
+  errors?: any;
   msg?: {
     class: string;
     text: string;

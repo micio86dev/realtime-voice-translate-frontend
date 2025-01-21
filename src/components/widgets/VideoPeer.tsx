@@ -5,9 +5,9 @@ import {
   useStore,
   noSerialize,
   useTask$,
-} from '@builder.io/qwik';
-import Peer from 'peerjs';
-import Select from '~/components/atoms/Inputs/Select';
+} from "@builder.io/qwik";
+import Peer from "peerjs";
+import Select from "~/components/atoms/Inputs/Select";
 
 interface PeerProps {
   userId: string;
@@ -28,12 +28,16 @@ export default component$((props: PeerProps) => {
   });
 
   const initLocalVideo = $(async () => {
-    const videoElement = document.getElementById('myVideo') as HTMLVideoElement;
-    const video = store.selectedCamera ? { deviceId: { exact: store.selectedCamera } } : true;
+    const videoElement = document.getElementById("myVideo") as HTMLVideoElement;
+    const video = store.selectedCamera
+      ? { deviceId: { exact: store.selectedCamera } }
+      : true;
 
-    await navigator.mediaDevices.getUserMedia({ video, audio: false }).then((stream: MediaStream) => {
-      videoElement.srcObject = stream;
-    });
+    await navigator.mediaDevices
+      .getUserMedia({ video, audio: false })
+      .then((stream: MediaStream) => {
+        videoElement.srcObject = stream;
+      });
   });
 
   const selectCamera = $((event: Event) => {
@@ -45,51 +49,60 @@ export default component$((props: PeerProps) => {
   const getCameras = $(async () => {
     try {
       const devices = await navigator.mediaDevices.enumerateDevices();
-      const videoDevices = devices.filter(device => device.kind === 'videoinput');
+      const videoDevices = devices.filter(
+        (device) => device.kind === "videoinput",
+      );
 
       store.cameras = videoDevices.map((device: any) => {
         return {
           id: device.deviceId,
           name: device.label,
-        }
+        };
       });
       store.selectedCamera = store.cameras[0].id;
       initLocalVideo();
     } catch (error) {
-      console.error('Errore nel recupero dei dispositivi:', error);
+      console.error("Errore nel recupero dei dispositivi:", error);
     }
   });
 
   const connectToPeer = $(() => {
     store.conn = store.peer.connect(props.remoteId);
-    console.log(store.conn, 'connectToPeer');
+    console.log(store.conn, "connectToPeer");
 
-    store.conn.on('open', () => {
-      console.log('My peer ID is: ' + store.peer.id);
+    store.conn.on("open", () => {
+      console.log("My peer ID is: " + store.peer.id);
     });
 
-    store.peer.on('connection', (conn: any) => {
-      conn.on('data', (data: any) => {
+    store.peer.on("connection", (conn: any) => {
+      conn.on("data", (data: any) => {
         console.log(data);
       });
     });
 
-    store.peer.on('call', (call: any) => {
-      store.getUserMedia({ video: true, audio: false }, (stream: MediaStream) => {
-        call.answer(stream);
-        call.on('stream', (remoteStream: MediaStream) => {
-          console.log(remoteStream);
-        });
-      }, function (err: any) {
-        console.log('Failed to get remote stream', err);
-      });
+    store.peer.on("call", (call: any) => {
+      store.getUserMedia(
+        { video: true, audio: false },
+        (stream: MediaStream) => {
+          call.answer(stream);
+          call.on("stream", (remoteStream: MediaStream) => {
+            console.log(remoteStream);
+          });
+        },
+        function (err: any) {
+          console.log("Failed to get remote stream", err);
+        },
+      );
     });
   });
 
-  useOnDocument("qinit", $(async () => {
-    initPeer();
-    getCameras();
-  }));
+  useOnDocument(
+    "qinit",
+    $(async () => {
+      initPeer();
+      getCameras();
+    }),
+  );
 
   useTask$(({ track }) => {
     // Watch remoteId
@@ -103,7 +116,14 @@ export default component$((props: PeerProps) => {
   return (
     <div class="local-video">
       <video id="myVideo" autoplay playsInline />
-      { store.cameras.length > 0 && <Select options={ store.cameras } onInput={ selectCamera } label={ $localize`Choose a camera` } name="voice" /> }
+      {store.cameras.length > 0 && (
+        <Select
+          options={store.cameras}
+          onInput={selectCamera}
+          label={$localize`Choose a camera`}
+          name="voice"
+        />
+      )}
     </div>
   );
 });

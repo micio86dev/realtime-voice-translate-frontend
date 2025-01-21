@@ -1,6 +1,5 @@
 {
   "name": "realtime-voice-translate-frontend",
-  "version": "1.0.0",
   "description": "Realtime Voice Translate",
   "type": "module",
   "engines": {

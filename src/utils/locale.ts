@@ -1,4 +1,4 @@
-import { getLocale } from '@builder.io/qwik';
+import { getLocale } from "@builder.io/qwik";
 
 export const getFullLocale = () => {
   const lang = getLocale(); // Example: 'it'

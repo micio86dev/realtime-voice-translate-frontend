@@ -13,13 +13,29 @@ interface BButtonProps {
 
 export default component$((props: BButtonProps) => (
   <button
-    type={ props.type ?? 'button' }
-    class={ `${ props.class ? `is-${ props.class }` : '' }` }
-    disabled={ props.disabled || props.loading }
-    onClick$={ props.type == 'button' ? props.onClick : undefined }>
-    { props.loading && <><IconSpinner />&nbsp;</> }
-    { props.iconLeft && <>&nbsp;<i class={ `icon ${ props.iconLeft }` } /></> }
+    type={props.type ?? "button"}
+    class={`${props.class ? `is-${props.class}` : ""}`}
+    disabled={props.disabled || props.loading}
+    onClick$={props.type == "button" ? props.onClick : undefined}
+  >
+    {props.loading && (
+      <>
+        <IconSpinner />
+        &nbsp;
+      </>
+    )}
+    {props.iconLeft && (
+      <>
+        &nbsp;
+        <i class={`icon ${props.iconLeft}`} />
+      </>
+    )}
     <Slot />
-    { props.iconRight && <>&nbsp;<i class={ `icon ${ props.iconRight }` } /></> }
+    {props.iconRight && (
+      <>
+        &nbsp;
+        <i class={`icon ${props.iconRight}`} />
+      </>
+    )}
   </button>
 ));

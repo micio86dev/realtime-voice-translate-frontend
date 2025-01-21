@@ -4,7 +4,5 @@ interface ItemProps {
 
 export const IconSpinner = (props: ItemProps) => {
   const { class: className } = props;
-  return (
-    <div class={ `loader ${ className || "" }` }></div>
-  );
+  return <div class={`loader ${className || ""}`}></div>;
 };

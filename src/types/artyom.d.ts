@@ -1,4 +1,4 @@
-declare module 'artyom.js' {
+declare module "artyom.js" {
   export default class Artyom {
     static default: typeof Artyom;
     initialize(options: {
@@ -20,7 +20,7 @@ declare module 'artyom.js' {
   }
 }
 
-declare module 'artyom.js' {
+declare module "artyom.js" {
   const Artyom: any;
   export default Artyom;
 }
