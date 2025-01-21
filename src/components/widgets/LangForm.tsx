@@ -97,11 +97,13 @@ export default component$((props: { userId: string }) => {
 
   const addMember = $((member: Member) => {
     if (store.onlineUsers.find((m: Member) => m.id === member.id)) {
+      console.log('Replace member');
       // If exists, update it
       store.onlineUsers = store.onlineUsers.filter((mx: Member) =>
         mx.id === member.id ? mx : member,
       );
     } else {
+      console.log('Push member')
       store.onlineUsers.push(member);
     }
   });
