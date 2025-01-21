@@ -14,7 +14,7 @@ module.exports = {
       repo: 'git@github.com:micio86dev/realtime-voice-translate-frontend.git',
       path: '/var/www/html/realtime-voice-translate',
       'pre-deploy-local': '',
-      'post-deploy': 'cp .env.prod .env && bun install && bun run build && pm2 reload ecosystem.config.js --env production',
+      'post-deploy': 'bun install && bun run build && pm2 reload ecosystem.config.js --env production',
       'pre-setup': ''
     }
   }
