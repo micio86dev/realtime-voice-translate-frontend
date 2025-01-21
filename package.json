@@ -49,7 +49,7 @@
     "vite-tsconfig-paths": "^4.2.1"
   },
   "dependencies": {
-    "@angular/localize": "^16.2.2",
+    "@angular/localize": "^19.1.2",
     "@tailwindcss/typography": "^0.5.13",
     "artyom.js": "^1.0.6",
     "peerjs": "1.5.4",
