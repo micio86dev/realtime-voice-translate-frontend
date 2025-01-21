@@ -1,7 +1,7 @@
 import {
   component$,
 } from '@builder.io/qwik';
-import ImgLogo from '~/assets/images/logo.webp?jsx';
+import ImgLogo from '../assets/images/logo.webp?jsx';
 
 export default component$(() => {
 
