@@ -3,16 +3,16 @@
   "version": "1.0.0",
   "description": "Realtime Voice Translate",
   "private": true,
-  "trustedDependencies": [
-    "sharp"
-  ],
-  "trustedDependencies-annotation": "Needed for bun to allow running install scripts",
   "type": "module",
+  "engines": {
+    "node": "^18.17.0 || ^20.3.0 || >=21.0.0"
+  },
+  "engines-annotation": "Mostly required by sharp which needs a Node-API v9 compatible runtime",
   "scripts": {
     "build": "qwik build",
     "build.client": "vite build",
     "build.preview": "vite build --ssr src/entry.preview.tsx",
-    "build.server": "vite build -c adapters/vercel-edge/vite.config.ts",
+    "build.server": "vite build -c adapters/bun/vite.config.ts",
     "build.types": "tsc --incremental --noEmit",
     "deploy": "vercel deploy",
     "dev": "vite --mode ssr",
