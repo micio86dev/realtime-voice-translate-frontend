@@ -11,7 +11,7 @@ module.exports = {
       user: 'www-data',
       host: '139.59.143.5',
       ref: 'origin/main',
-      repo: 'git@github.com:miciodev/realtime-voice-translate-frontend.git',
+      repo: 'git@github.com:micio86dev/realtime-voice-translate-frontend.git',
       path: '/var/www/html/realtime-voice-translate',
       'pre-deploy-local': '',
       'post-deploy': 'cp .env.prod .env && bun install && bun run build && pm2 reload ecosystem.config.js --env production',
