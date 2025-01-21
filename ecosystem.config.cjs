@@ -6,6 +6,10 @@ module.exports = {
       interpreter: "bun",
       args: '--name="realtime-voice-translate" --watch',
       watch: ["./server", "./dist"],
+      env: {
+        NODE_ENV: "production",
+        PORT: 3013,
+      },
     },
   ],
 
