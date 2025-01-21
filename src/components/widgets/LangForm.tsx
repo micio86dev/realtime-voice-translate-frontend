@@ -103,8 +103,10 @@ export default component$((props: { userId: string }) => {
         mx.id === member.id ? mx : member,
       );
     } else {
-      console.log('Push member')
-      store.onlineUsers.push(member);
+      const os = [...store.onlineUsers];
+      console.log(os, 'os');
+      os.push(member);
+      store.onlineUsers = [...os];
     }
   });
 
