@@ -1,8 +1,8 @@
 module.exports = {
   apps: [{
-    name: 'real-fit',
+    name: 'realtive-voice-translate',
     script: 'server/entry.bun.js',
-    args: '--name="real-fit" --watch',
+    args: '--name="realtive-voice-translate" --watch',
     watch: './dist'
   }],
 
