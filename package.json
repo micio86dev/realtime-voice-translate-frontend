@@ -1,10 +1,7 @@
 {
-  "name": "my-qwik-empty-starter",
-  "description": "Blank project with routing included",
-  "engines": {
-    "node": "^18.17.0 || ^20.3.0 || >=21.0.0"
-  },
-  "engines-annotation": "Mostly required by sharp which needs a Node-API v9 compatible runtime",
+  "name": "realtime-voice-translate-frontend",
+  "version": "1.0.0",
+  "description": "Realtime Voice Translate",
   "private": true,
   "trustedDependencies": [
     "sharp"
