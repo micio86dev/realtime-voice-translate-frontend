@@ -2,7 +2,7 @@ module.exports = {
   apps: [
     {
       name: "realtime-voice-translate",
-      script: "server/entry.bun.js",
+      script: "bun start",
       args: '--name="realtime-voice-translate" --watch',
       watch: "./dist",
     },
