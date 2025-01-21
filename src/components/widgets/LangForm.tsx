@@ -33,7 +33,7 @@ export default component$((props: { userId: string }) => {
       { name: $localize`Spanish`, id: "es", lang: "es-ES" },
       { name: $localize`Italian`, id: "it", lang: "it-IT" },
     ],
-  });
+  }, { deep: true });
 
   const backendUrl = import.meta.env.VITE_API_URL ?? 'https://api.realtime-voice-translate.it';
 
@@ -97,16 +97,13 @@ export default component$((props: { userId: string }) => {
 
   const addMember = $((member: Member) => {
     if (store.onlineUsers.find((m: Member) => m.id === member.id)) {
-      console.log('Replace member');
       // If exists, update it
       store.onlineUsers = store.onlineUsers.filter((mx: Member) =>
         mx.id === member.id ? mx : member,
       );
     } else {
-      const os = [...store.onlineUsers];
-      console.log(os, 'os');
-      os.push(member);
-      store.onlineUsers = [...os];
+      store.onlineUsers.push(member);
+      console.log(store.onlineUsers, 'online users');
     }
   });
 
