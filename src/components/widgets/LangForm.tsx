@@ -35,7 +35,7 @@ export default component$((props: { userId: string }) => {
     ],
   });
 
-  const backendUrl = import.meta.env.VITE_API_URL;
+  const backendUrl = import.meta.env.VITE_API_URL ?? 'https://api.realtime-voice-translate.it';
 
   const changeVoice = $((event?: Event) => {
     if (event) {
@@ -118,7 +118,7 @@ export default component$((props: { userId: string }) => {
         membersIds.forEach((id: string) => {
           if (id !== store.userId) {
             const member = members.members[id];
-            console.log(`User subscribed: ${id}`);
+            console.log(`User subscribed: ${ id }`);
 
             addMember({
               id,
@@ -132,7 +132,7 @@ export default component$((props: { userId: string }) => {
 
     // When a user joins
     presenceChannel.bind("pusher:member_added", (member: Member) => {
-      console.log(`${member.id} joined`);
+      console.log(`${ member.id } joined`);
 
       addMember({
         id: member.id,
@@ -143,7 +143,7 @@ export default component$((props: { userId: string }) => {
 
     // When a user leaves
     presenceChannel.bind("pusher:member_removed", (member: Member) => {
-      console.log(`${member.id} leaved`);
+      console.log(`${ member.id } leaved`);
 
       removeMember(member);
     });
@@ -169,7 +169,7 @@ export default component$((props: { userId: string }) => {
       message: store.message,
     });
 
-    fetch(`${backendUrl}/send-message`, {
+    fetch(`${ backendUrl }/send-message`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -244,7 +244,7 @@ export default component$((props: { userId: string }) => {
       store.pusher = noSerialize(
         new PusherModule.default("27991ede2e5f0b8d86d9", {
           cluster: "eu",
-          authEndpoint: `${backendUrl}/pusher/auth`,
+          authEndpoint: `${ backendUrl }/pusher/auth`,
           auth: {
             params: {
               user_id: store.userId,
@@ -301,68 +301,68 @@ export default component$((props: { userId: string }) => {
   return (
     <div class="flex h-full flex-col gap-4">
       <div
-        style={{
+        style={ {
           backgroundColor: store.listening ? "green" : "gray",
-        }}
-        class={`${store.speaking ? "animate-pulse" : ""} circle`}
+        } }
+        class={ `${ store.speaking ? "animate-pulse" : "" } circle` }
       >
-        {!store.selectedUser && <h3>{$localize`Choose a user`}</h3>}
+        { !store.selectedUser && <h3>{ $localize`Choose a user` }</h3> }
       </div>
-      <h3 class="py-4 text-center">{store.receivedMessage}</h3>
-      {store.userId}
+      <h3 class="py-4 text-center">{ store.receivedMessage }</h3>
+      { store.userId }
 
       <div class="container flex flex-col gap-4">
-        {store.selectedUser && (
+        { store.selectedUser && (
           <form
             preventdefault:submit
-            onSubmit$={sendMessage}
+            onSubmit$={ sendMessage }
             class="flex w-full flex-row"
           >
             <Input
               name="message"
-              placeholder={$localize`Write a message`}
-              label={$localize`Write a message or speak`}
-              value={store.message}
-              onInput={setMessage}
+              placeholder={ $localize`Write a message` }
+              label={ $localize`Write a message or speak` }
+              value={ store.message }
+              onInput={ setMessage }
             />
             <BButton
               type="submit"
               class="primary"
               iconRight="send"
-              loading={store.sendingMessage}
-              disabled={!store.message}
-            >{$localize`Send`}</BButton>
+              loading={ store.sendingMessage }
+              disabled={ !store.message }
+            >{ $localize`Send` }</BButton>
           </form>
-        )}
+        ) }
 
-        {store.onlineUsers.length > 0 && (
+        { store.onlineUsers.length > 0 && (
           <Select
-            options={store.onlineUsers}
-            onInput={selectUser}
-            label={$localize`Choose a user`}
-            placeholder={$localize`Choose a user`}
-            selected={store.selectedUser}
+            options={ store.onlineUsers }
+            onInput={ selectUser }
+            label={ $localize`Choose a user` }
+            placeholder={ $localize`Choose a user` }
+            selected={ store.selectedUser }
             name="user"
           />
-        )}
-        {store.supportedLangs.length > 0 && (
+        ) }
+        { store.supportedLangs.length > 0 && (
           <Select
-            options={store.supportedLangs}
-            label={$localize`Your language`}
-            placeholder={$localize`Select your language`}
-            onInput={changeLang}
-            selected={store.sourceLang}
+            options={ store.supportedLangs }
+            label={ $localize`Your language` }
+            placeholder={ $localize`Select your language` }
+            onInput={ changeLang }
+            selected={ store.sourceLang }
             name="lang"
           />
-        )}
-        {store.voices.length > 0 && (
+        ) }
+        { store.voices.length > 0 && (
           <Select
-            options={store.voices}
-            onInput={changeVoice}
-            label={$localize`Choose a voice`}
+            options={ store.voices }
+            onInput={ changeVoice }
+            label={ $localize`Choose a voice` }
             name="voice"
           />
-        )}
+        ) }
       </div>
     </div>
   );
