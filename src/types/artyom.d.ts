@@ -5,10 +5,13 @@ declare module 'artyom.js' {
       lang: string;
       continuous?: boolean;
       soundex?: boolean;
+      mode: string;
+      volume?: number;
       listen?: boolean;
       debug?: boolean;
       speed?: number;
     }): Promise<void>;
+    remoteProcessorService(callback: (phrase: any) => void): void;
     say(text: string): void;
     startListening(): void;
     stopListening(): void;

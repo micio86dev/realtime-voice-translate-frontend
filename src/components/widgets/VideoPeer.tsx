@@ -27,10 +27,11 @@ export default component$((props: PeerProps) => {
     store.peer = noSerialize(new Peer(props.userId));
   });
 
-  const initLocalVideo = $(() => {
+  const initLocalVideo = $(async () => {
     const videoElement = document.getElementById('myVideo') as HTMLVideoElement;
+    const video = store.selectedCamera ? { deviceId: { exact: store.selectedCamera } } : true;
 
-    navigator.mediaDevices.getUserMedia({ video: { deviceId: { exact: store.selectedCamera } }, audio: false }).then((stream: MediaStream) => {
+    await navigator.mediaDevices.getUserMedia({ video, audio: false }).then((stream: MediaStream) => {
       videoElement.srcObject = stream;
     });
   });

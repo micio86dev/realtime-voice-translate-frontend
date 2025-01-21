@@ -9,11 +9,13 @@ import LangForm from "~/components/widgets/LangForm";
 import VideoPeer from "~/components/widgets/VideoPeer";
 
 export default component$(() => {
+  const userId = crypto.randomUUID();
+
   return (
-    <section class="h-[calc(90vh)]">
+    <section class="h-[calc(90vh)] p-4">
       <div class="row md:grid-cols-1 h-full">
-        <VideoPeer userId="user-1" />
-        <LangForm />
+        <VideoPeer userId={ userId } />
+        <LangForm userId={ userId } />
       </div>
     </section>
   );

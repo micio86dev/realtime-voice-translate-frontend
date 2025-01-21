@@ -11,7 +11,7 @@ import Input from '~/components/atoms/Inputs/Input';
 import BButton from '~/components/atoms/Buttons/BButton';
 import type { Message, Voice, Lang, Phrase, Member, Members } from '~/types';
 
-export default component$(() => {
+export default component$((props: { userId: string }) => {
   const store = useStore({
     listening: false,
     speaking: false,
@@ -21,8 +21,8 @@ export default component$(() => {
     channel: null as any,
     sendingMessage: false,
     artyom: null as any,
+    userId: props.userId,
     voices: [],
-    userId: '',
     selectedVoice: 'Alice',
     receivedMessage: '',
     sourceLang: getLocale(), // Default from the browser
@@ -50,6 +50,8 @@ export default component$(() => {
 
   // Set first of available voices
   const setVoices = $(() => {
+    if (!store.artyom) return;
+
     const voices = store.artyom.getVoices()
       .filter((voice: Voice) => voice.lang.includes(store.sourceLang) && voice.localService)
       .map((voice: Voice) => { return { name: voice.name, id: voice.name } });
@@ -131,7 +133,7 @@ export default component$(() => {
     store.sendingMessage = true;
 
     if (!store.selectedUser) {
-      alert($localize`Please, choose a user`);
+      console.log($localize`Please, choose a user`);
       return;
     }
 
@@ -152,21 +154,24 @@ export default component$(() => {
       body,
     }).finally(() => {
       store.sendingMessage = false;
-      store.message = '';
+
+      setTimeout(() => {
+        store.message = '';
+      }, 1000);
     });
   });
 
   const artyomInit = $(async () => {
+    if (store.artyom) return;
+
     const ArtyomModule = await import('artyom.js');
     const Artyom = ArtyomModule.default;
     const artyomInstance = new Artyom();
 
     // Inizializza Artyom lato client
-    store.artyom = noSerialize(artyomInstance);
-
     const lang = store.supportedLangs.find((lang: Lang) => lang.id === store.sourceLang)?.lang || 'en-GB';
 
-    store.artyom.initialize({
+    await artyomInstance.initialize({
       lang,
       continuous: true,
       soundex: true,
@@ -178,9 +183,9 @@ export default component$(() => {
     }).then(() => {
       setVoices();
 
-      store.artyom.remoteProcessorService((phrase: Phrase) => {
+      artyomInstance.remoteProcessorService((phrase: Phrase) => {
         if (!store.selectedUser) {
-          alert($localize`Please, choose a user`);
+          console.log($localize`Please, choose a user`);
         } else {
           store.speaking = true;
 
@@ -195,6 +200,8 @@ export default component$(() => {
         }
       });
 
+      store.artyom = noSerialize(artyomInstance);
+
       store.listening = true;
     }).catch((err: any) => {
       console.error(err);
@@ -202,9 +209,6 @@ export default component$(() => {
   });
 
   const initPusher = $(() => {
-    if (!store.userId) {
-      store.userId = crypto.randomUUID();
-    }
     store.channelName = 'chat';
 
     // Init pusher
@@ -250,25 +254,25 @@ export default component$(() => {
     store.message = target.value;
   });
 
-  const selectUser = $((event: Event) => {
+  const selectUser = $(async (event: Event) => {
     const target = event.target as HTMLSelectElement;
     store.selectedUser = target.value;
+
+    await artyomInit();
   });
 
-  useOnDocument("qinit", $(async () => {
-    await artyomInit();
-    setVoices();
+  useOnDocument("qinit", $(() => {
     initPusher();
   }));
 
   return (
-    <div class="flex flex-col p-4 gap-4 h-full">
+    <div class="flex flex-col gap-4 h-full">
       <div
         style={ {
           backgroundColor: store.listening ? 'green' : 'gray',
         } }
         class={ `${ store.speaking ? 'animate-pulse' : '' } circle` }
-      >
+      >{ !store.selectedUser && <h3>{ $localize`Choose a user` }</h3> }
       </div>
       <h3 class="py-4 text-center">{ store.receivedMessage }</h3>
       { store.userId }
@@ -279,12 +283,9 @@ export default component$(() => {
           <BButton type="submit" class="primary" iconRight="send" loading={ store.sendingMessage } disabled={ !store.message }>{ $localize`Send` }</BButton>
         </form> }
 
-        { JSON.stringify(store.onlineUsers.find((user: Member) => user.id === store.selectedUser)) }
-
+        { store.onlineUsers.length > 0 && <Select options={ store.onlineUsers } onInput={ selectUser } label={ $localize`Choose a user` } placeholder={ $localize`Choose a user` } selected={ store.selectedUser } name="user" /> }
         { store.supportedLangs.length > 0 && <Select options={ store.supportedLangs } label={ $localize`Your language` } placeholder={ $localize`Select your language` } onInput={ changeLang } selected={ store.sourceLang } name="lang" /> }
         { store.voices.length > 0 && <Select options={ store.voices } onInput={ changeVoice } label={ $localize`Choose a voice` } name="voice" /> }
-
-        { store.onlineUsers.length > 0 && <Select options={ store.onlineUsers } onInput={ selectUser } label={ $localize`Choose a user` } placeholder={ $localize`Choose a user` } selected={ store.selectedUser } name="user" /> }
       </div>
     </div>
   );
