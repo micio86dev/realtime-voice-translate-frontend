@@ -9,7 +9,7 @@ export default component$(() => {
     <div class="navbar">
       <div class="logo">
         <Image
-          src="/images/logo.webp"
+          src="~/assets/images/logo.webp"
           layout="constrained"
           width={ 64 }
           height={ 64 }
