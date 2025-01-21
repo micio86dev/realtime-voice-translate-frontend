@@ -17,7 +17,7 @@ module.exports = {
       path: "/var/www/html/realtime-voice-translate",
       "pre-deploy-local": "",
       "post-deploy":
-        "bun install && bun run build && pm2 reload ecosystem.config.js --env production",
+        "bun install && bun run build && pm2 reload ecosystem.config.cjs --env production",
       "pre-setup": "",
     },
   },
