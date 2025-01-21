@@ -5,7 +5,6 @@ import {
   type DocumentHead,
 } from "@builder.io/qwik-city";
 import { SITE } from "~/config.mjs";
-import LangForm from "~/components/widgets/LangForm";
 import VideoPeer from "~/components/widgets/VideoPeer";
 
 export default component$(() => {
@@ -15,7 +14,6 @@ export default component$(() => {
     <section class="h-[calc(90vh)] p-4">
       <div class="row md:grid-cols-1 h-full">
         <VideoPeer userId={ userId } />
-        <LangForm userId={ userId } />
       </div>
     </section>
   );
