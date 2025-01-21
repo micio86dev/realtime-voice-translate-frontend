@@ -2,12 +2,15 @@
   "name": "realtime-voice-translate-frontend",
   "version": "1.0.0",
   "description": "Realtime Voice Translate",
-  "private": true,
   "type": "module",
   "engines": {
     "node": "^18.17.0 || ^20.3.0 || >=21.0.0"
   },
   "engines-annotation": "Mostly required by sharp which needs a Node-API v9 compatible runtime",
+  "private": true,
+  "trustedDependencies": [
+    "sharp"
+  ],
   "scripts": {
     "build": "qwik build",
     "build.client": "vite build",
