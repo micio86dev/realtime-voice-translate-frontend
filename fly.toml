@@ -5,12 +5,11 @@ primary_region = "mad"
 auto_start_machines = true
 auto_stop_machines = true
 force_https = true
-internal_port = 3_000
+internal_port = 3000
 min_machines_running = 0
 processes = [ "app" ]
 
 [build]
-  builder = "heroku/builder:24"
 
 [[vm]]
 cpu_kind = "shared"
