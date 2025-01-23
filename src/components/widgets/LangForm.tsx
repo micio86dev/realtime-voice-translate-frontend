@@ -2,16 +2,17 @@ import {
   component$,
   useStore,
   $,
-  getLocale,
   useOnDocument,
   noSerialize,
 } from "@builder.io/qwik";
 import Select from "~/components/atoms/Inputs/Select";
 import Input from "~/components/atoms/Inputs/Input";
 import BButton from "~/components/atoms/Buttons/BButton";
+import { inlineTranslate } from 'qwik-speak';
 import type { Message, Voice, Lang, Phrase, Member, Members } from "~/types";
 
 export default component$((props: { userId: string }) => {
+  const t = inlineTranslate();
   const store = useStore({
     listening: false,
     speaking: false,
@@ -25,13 +26,13 @@ export default component$((props: { userId: string }) => {
     voices: [],
     selectedVoice: "Alice",
     receivedMessage: "",
-    sourceLang: getLocale(), // Default from the browser
+    sourceLang: 'en', // Default from the browser
     onlineUsers: [] as any,
     selectedUser: null as any,
     supportedLangs: [
-      { name: $localize`English`, id: "en", lang: "en-GB" },
-      { name: $localize`Spanish`, id: "es", lang: "es-ES" },
-      { name: $localize`Italian`, id: "it", lang: "it-IT" },
+      { name: t('English'), id: "en", lang: "en-GB" },
+      { name: t('Spanish'), id: "es", lang: "es-ES" },
+      { name: t('Italian'), id: "it", lang: "it-IT" },
     ],
   }, { deep: true });
 
@@ -155,7 +156,7 @@ export default component$((props: { userId: string }) => {
     store.sendingMessage = true;
 
     if (!store.selectedUser) {
-      console.log($localize`Please, choose a user`);
+      console.log('Please, choose a user');
       return;
     }
 
@@ -213,7 +214,7 @@ export default component$((props: { userId: string }) => {
 
         artyomInstance.remoteProcessorService((phrase: Phrase) => {
           if (!store.selectedUser) {
-            console.log($localize`Please, choose a user`);
+            console.log('Please, choose a user');
           } else {
             store.speaking = true;
 
@@ -307,7 +308,7 @@ export default component$((props: { userId: string }) => {
         } }
         class={ `${ store.speaking ? "animate-pulse" : "" } circle` }
       >
-        { !store.selectedUser && <h3>{ $localize`Choose a user` }</h3> }
+        { !store.selectedUser && <h3>{ t('Choose a user') }</h3> }
       </div>
       <h3 class="py-4 text-center">{ store.receivedMessage }</h3>
       { store.userId }
@@ -321,8 +322,8 @@ export default component$((props: { userId: string }) => {
           >
             <Input
               name="message"
-              placeholder={ $localize`Write a message` }
-              label={ $localize`Write a message or speak` }
+              placeholder={ t('Write a message') }
+              label={ t('Write a message or speak') }
               value={ store.message }
               onInput={ setMessage }
             />
@@ -332,7 +333,7 @@ export default component$((props: { userId: string }) => {
               iconRight="send"
               loading={ store.sendingMessage }
               disabled={ !store.message }
-            >{ $localize`Send` }</BButton>
+            >{ t('Send') }</BButton>
           </form>
         ) }
 
@@ -340,8 +341,8 @@ export default component$((props: { userId: string }) => {
           <Select
             options={ store.onlineUsers }
             onInput={ selectUser }
-            label={ $localize`Choose a user` }
-            placeholder={ $localize`Choose a user` }
+            label={ t('Choose a user') }
+            placeholder={ t('Choose a user') }
             selected={ store.selectedUser }
             name="user"
           />
@@ -349,8 +350,8 @@ export default component$((props: { userId: string }) => {
         { store.supportedLangs.length > 0 && (
           <Select
             options={ store.supportedLangs }
-            label={ $localize`Your language` }
-            placeholder={ $localize`Select your language` }
+            label={ t('Your language') }
+            placeholder={ t('Select your language') }
             onInput={ changeLang }
             selected={ store.sourceLang }
             name="lang"
@@ -360,7 +361,7 @@ export default component$((props: { userId: string }) => {
           <Select
             options={ store.voices }
             onInput={ changeVoice }
-            label={ $localize`Choose a voice` }
+            label={ t('Choose a voice') }
             name="voice"
           />
         ) }

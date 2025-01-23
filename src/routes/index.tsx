@@ -1,18 +1,20 @@
-import { component$, useVisibleTask$, getLocale } from "@builder.io/qwik";
-import type { DocumentHead } from "@builder.io/qwik-city";
-import { useNavigate } from "@builder.io/qwik-city";
+import { component$ } from "@builder.io/qwik";
+import { type DocumentHead } from "@builder.io/qwik-city";
 import { SITE } from "~/config.mjs";
+import LangForm from "~/components/widgets/LangForm";
+import VideoPeer from "~/components/widgets/VideoPeer";
 
 export default component$(() => {
-  const lang = getLocale();
-  const nav = useNavigate();
+  const userId = crypto.randomUUID();
 
-  // eslint-disable-next-line qwik/no-use-visible-task
-  useVisibleTask$(() => {
-    nav(`/${lang}`);
-  });
-
-  return <></>;
+  return (
+    <section class="h-[calc(90vh)] p-4">
+      <div class="row h-full md:grid-cols-1">
+        <VideoPeer userId={ userId } />
+        <LangForm userId={ userId } />
+      </div>
+    </section>
+  );
 });
 
 export const head: DocumentHead = {

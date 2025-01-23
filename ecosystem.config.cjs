@@ -2,10 +2,10 @@ module.exports = {
   apps: [
     {
       name: "realtime-voice-translate",
-      script: "start",
+      script: "server/entry.bun.js",
       interpreter: "bun",
       args: '--name="realtime-voice-translate" --watch',
-      watch: ["./server", "./dist"],
+      watch: false,
       env: {
         NODE_ENV: "production",
         PORT: 3013,

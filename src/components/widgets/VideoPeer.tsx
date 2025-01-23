@@ -7,6 +7,7 @@ import {
   useTask$,
 } from "@builder.io/qwik";
 import Peer from "peerjs";
+import { inlineTranslate } from 'qwik-speak';
 import Select from "~/components/atoms/Inputs/Select";
 
 interface PeerProps {
@@ -15,6 +16,7 @@ interface PeerProps {
 }
 
 export default component$((props: PeerProps) => {
+  const t = inlineTranslate();
   const store = useStore({
     peer: null as any,
     conn: null as any,
@@ -116,14 +118,14 @@ export default component$((props: PeerProps) => {
   return (
     <div class="local-video">
       <video id="myVideo" autoplay playsInline />
-      {store.cameras.length > 0 && (
+      { store.cameras.length > 0 && (
         <Select
-          options={store.cameras}
-          onInput={selectCamera}
-          label={$localize`Choose a camera`}
+          options={ store.cameras }
+          onInput={ selectCamera }
+          label={ t('Choose a camera') }
           name="voice"
         />
-      )}
+      ) }
     </div>
   );
 });
