@@ -230,6 +230,7 @@ export default component$((props: { userId: string }) => {
         });
 
         store.artyom = noSerialize(artyomInstance);
+        console.log('init Artyom');
 
         store.listening = true;
       })
@@ -264,7 +265,7 @@ export default component$((props: { userId: string }) => {
         console.log("new-message", data);
         if (data.user_id === store.userId) {
           store.receivedMessage = data.message;
-          store.artyom.say(data.message);
+          store.artyom?.say(data.message);
         }
       });
     });
